@@ -1,0 +1,13 @@
+.c.o:
+	SC $(CFLAGS) $(CPU) $*.c
+
+CFLAGS	= NMINC MCCONS STREQ STRMERGE NOSTKCHK DEFINE=__PROTO__ GST=sx:sx.gst OPT
+LFLAGS	= SD SC NOICONS STRIPDEBUG
+
+CPU	= CPU=ANY
+
+OBJS	= UserEd.o UserEd_gui.o md5.o newscan_gui.o
+LIBS	= LIB:sc.lib LIB:amiga.lib
+
+UserEd:	$(OBJS)
+	SLINK LIB:c.o $(OBJS) TO $@ LIB $(LIBS) $(LFLAGS)
