@@ -1,0 +1,22 @@
+* "AEDoor.library"
+##base _AEDBase
+##bias 30
+##public
+CreateComm(node)(d0)
+DeleteComm(dif)(a1)
+SendCmd(dif,command)(a1,d0)
+SendStrCmd(dif,command,string)(a1,d0,a0)
+SendDataCmd(dif,command,data)(a1,d0,d1)
+SendStrDataCmd(dif,command,string,data)(a1,d0,a0,d1)
+GetData(dif)(a1)
+GetString(dif)(a1)
+Prompt(dif,length,pstring)(a1,d1,a0)
+WriteStr(dif,string,flags)(a1,a0,d1)
+ShowGFile(dif,file)(a1,a0)
+ShowFile(dif,file)(a1,a0)
+SetDT(dif,id,str)(a1,d0,a0)
+GetDT(dif,id,str)(a1,d0,a0)
+GetStr(dif,length,defstr)(a1,d1,a0)
+CopyStr(dif,buffer)(a1,a0)
+HotKey(dir,promptstr)(a1,a0)
+##end

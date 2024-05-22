@@ -1,0 +1,539 @@
+TABLE OF CONTENTS
+
+AEDoor.library/CreateComm
+AEDoor.library/DeleteComm
+AEDoor.library/SendCmd
+AEDoor.library/SendStrCmd
+AEDoor.library/SendDataCmd
+AEDoor.library/SendStrDataCmd
+AEDoor.library/GetData
+AEDoor.library/GetString
+AEDoor.library/Prompt
+AEDoor.library/WriteStr
+AEDoor.library/ShowGFile
+AEDoor.library/ShowFile
+AEDoor.library/SetDT
+AEDoor.library/GetDT
+AEDoor.library/GetStr
+AEDoor.library/CopyStr
+AEDoor.library/HotKey
+AEDoor.library/PreCreateComm
+AEDoor.library/PostDeleteComm
+AEDoor.library/CreateComm
+
+   NAME
+	CreateComm - Create a door communication channel (Changed in V2)
+
+   SYNOPSIS
+	dif = CreateComm(node)
+	 D0               D0
+
+	struct DIFace *CreateComm(ULONG);
+
+	---CHANGED IN V2.0---
+	dif = CreateComm()
+	 D0
+
+   CHANGED!
+	The V2.0 routine is still 100% compatible with the V1.x function, but
+	now it finds the node number itself by looking it up in the argument
+	string passed to the door. This change was necessary since there was
+	no other way to make this 32 node compatible. Anyway, you won't notice
+	anything about this! But PLEASE make sure that you ask exec for V2 of
+	this library if you don't pass the node number anymore!!!!
+	The interfaces for C, E, Pascal still require a parameter to be passed
+	to this function, but the lib routine doesn't use the parameter
+	anymore.
+
+   FUNCTION
+        This function is normally called at the start of a door. It allocates
+        and initializes all the structures it needs to communicate with amix.
+        If all went well, then the JH_REGISTER command is send to amix to
+        notify express that the door is ready.
+
+   NOTE
+        When there is not enough memory to allocate a structure, then the
+        function will delay for 1 second and will try again, until it can
+        allocate it's resources. This is done because there is NO way to tell
+        amix that we're out of memory (maybe /X 3.0 will have this fixed?!)
+        The waiting is done by the dos.library call _LVODelay(), this way
+        precious CPU Time is spared!
+
+   EXAMPLE
+	    CreateComm(argv[1][0]);
+
+   INPUTS
+	node - The ASCII (!) value of the node number. This value is passed to
+               the door by amix as a parameter. (OBSOLETE IN V2.0)
+
+   RESULT
+        dif - Ptr to an initialized DIFace structure
+
+   SEE ALSO
+	DeleteComm
+
+AEDoor.library/DeleteComm
+
+   NAME
+	DeleteComm - Delete a door communication channel
+
+   SYNOPSIS
+	DeleteComm(dif)
+	             A1
+
+	void DeleteComm(struct DIFace *);
+
+   FUNCTION
+        You *MUST* call this function to remove the communication channel made
+        by the CreateComm() call. This function will take care of freeing all
+        allocated memory and telling amix the door finnished it's job (it will
+        send a JH_SHUTDOWN to amix)
+
+   NOTE
+        This call will close the comm channel, so you won't be able to send
+        cmd's to express anymore, BUT the door can still do other tasks. So it
+        is NOT necessary to quit right after doing a DeleteComm() call!!
+
+        !!IMPORTANT!!
+        It is *NOT* possible to re-initialise the communication channel with
+        express after doing a DeleteComm()
+
+   EXAMPLE
+	    DeleteComm(dif);
+
+   INPUTS
+	dif - A pointer to the DIFace structure returned by CreateComm()
+
+   SEE ALSO
+	CreateComm
+
+AEDoor.library/SendCmd
+
+   NAME
+        SendCmd -- Send a door command to ami express
+ 
+   SYNOPSIS
+        SendCmd( dif, command )
+                 A1     D0
+ 
+        void SendCmd(struct DIFace *,ULONG)
+ 
+   FUNCTION
+        This function will send a simple command to the ami express
+        AEDoorPort and will wait for express to reply to the message.
+ 
+   INPUTS
+        command - Function Identifier
+        dif     - Ptr to DIFace structure
+ 
+   SEE ALSO
+	<amix/amix.i>
+
+AEDoor.library/SendStrCmd
+
+   NAME
+        SendStrCmd -- Send a string door command to ami express (V2)
+
+   SYNOPSIS
+        SendStrCmd( dif, command, string )
+                     A1    D0      A0
+
+        void SendStrCmd(struct DIFace *,ULONG,char *)
+
+   FUNCTION
+        This function will send a string command to the ami express
+        AEDoorPort and will wait for express to reply to the message.
+        The string in A0 will first be copied into the JHM_String field
+        and then the function SendCmd() will be called.
+	V2: Strings larger than 200 chars will be chopped
+
+   INPUTS
+        command - Function Identifier
+        string  - Ptr to NULL terminate string
+        dif     - Ptr to DIFace structure
+
+   SEE ALSO
+	<amix/amix.i>
+
+AEDoor.library/SendDataCmd
+
+   NAME
+        SendDataCmd -- Send a data door command to ami express
+
+   SYNOPSIS
+        SendDataCmd( dif, command, data )
+                      A1    D0      D1
+
+        void SendDataCmd(struct DIFace *,ULONG,ULONG)
+
+   FUNCTION
+        This function will send a data command to the ami express AEDoorPort
+        and will wait for express to reply to the message. The data in D1
+        will first be copied into the JHM_Data field and then the function
+        SendCmd() will be called.
+
+   INPUTS
+        command - Function Identifier
+        data    - Data 
+        dif     - Ptr to DIFace structure
+
+   SEE ALSO
+	<amix/amix.i>
+
+AEDoor.library/SendStrDataCmd
+
+   NAME
+        SendStrDataCmd -- Send a string & data door command to ami express
+									  (V2)
+
+   SYNOPSIS
+        SendStrDataCmd( dif, command, string, data )
+                        A1     D0      A0      D1
+
+        void SendStrDataCmd(struct DIFace *,ULONG,char *,ULONG)
+
+   FUNCTION
+        This function will send a string & data command to the ami express
+        AEDoorPort and will wait for express to reply to the message.
+        The string in A0 will first be copied into the JHM_String field
+        and the data in D1 will be copied to the JHM_Data field after that
+        the function SendCmd() will be called.
+	V2: Strings larger than 200 chars will be chopped
+
+   INPUTS
+        command - Function Identifier
+        data    - Data to be send to amix
+        string  - Ptr to NULL terminate string
+        dif     - Ptr to DIFace structure
+
+   SEE ALSO
+	<amix/amix.i>
+
+AEDoor.library/GetData
+
+   NAME
+        GetData -- Get a pointer to the JHM_Data field
+ 
+   SYNOPSIS
+        pdata = GetData( dif )
+         D0              A1
+ 
+        int *GetData(struct DIFace *)
+ 
+   FUNCTION
+        Get the address of the JHM_Data field. Please use this function,
+        instead of trying to find the field yourself. This way we will keep
+        the doors compatible with future revisions of ami express!
+ 
+   INPUTS
+        dif - Ptr to DIFace structure
+ 
+   RESULT
+        pdata - Ptr to JHM_Data field
+
+   NOTE
+        *OBSOLETE* as of V1.4 of AEDoor.library, since now the ptr is kept
+        in the DIFace structure (dif_Data). The function will still work tho,
+        but it's faster to get the address directly from the dif_Data field!
+
+AEDoor.library/GetString
+
+   NAME
+        GetString -- Get a pointer to the JHM_String field
+ 
+   SYNOPSIS
+        pstring = GetString( dif )
+           D0                A1
+ 
+        char *GetString(struct DIFace *)
+ 
+   FUNCTION
+        Get the address of the JHM_String field. Please use this function,
+        instead of trying to find the field yourself. This way we will keep
+        the doors compatible with future revisions of ami express!
+ 
+   INPUTS
+        dif - Ptr to DIFace structure
+ 
+   RESULT
+        pstring - Ptr to JHM_String field
+
+   NOTE
+        *OBSOLETE* as of V1.4 of AEDoor.library, since now the ptr is kept
+        in the DIFace structure (dif_String). The function will still work
+        tho, but it's faster to get the address directly from the dif_String
+        field!
+
+AEDoor.library/Prompt
+
+   NAME
+        Prompt -- Prompt the user for input, and limit the response size
+ 
+   SYNOPSIS
+        pstring = Prompt( dif, length, pstring )
+           D0             A1     D1      A0
+ 
+        char *Prompt(struct DIFace *,ULONG, char *)
+ 
+   FUNCTION
+	The string is send to amix prompting the user to enter something. The
+	size of the input field is limited by the length variable.
+ 
+   INPUTS
+        dif	- Ptr to DIFace structure
+	length	- max number of chars the user can enter
+	pstring - prompt string
+ 
+   RESULT
+        pstring - Ptr to JHM_String field or
+		  NULL if Lost Carrier
+   NOTE
+	For the convinience of asm programmers, the Z flag will be set when
+	there was a loss of carrier
+
+AEDoor.library/WriteStr
+
+   NAME
+        WriteStr -- Output a string to the user (V2)
+
+   SYNOPSIS
+        WriteStr( dif, string, flags )
+                  A1     A0     D1
+
+        void WriteStr(struct DIFace *,char *,ULONG)
+
+   FUNCTION
+	Output the string to the user, adding a LF depending on the status
+	of the feed variable
+
+   UPDATE V2 INFO
+	The parameter feed has been replaced by flags, but this function is
+	still 100% compatible with the V1 function.
+
+   INPUTS
+        dif     - Ptr to DIFace structure
+	string	- Ptr to string to output
+	flags	- LF  : Print a LineFeed after the text
+		  SAFE: Allow strings larger than 200 chars to be printed
+
+   NOTE
+	The flags are:
+		WSF_LF   = LineFeed FLAG            (= 1)
+		WSB_LF   = LineFeed-flag bit number (= 0)
+		WSF_SAFE = Safe >200 strings        (= 2)
+		WSB_SAFE = Safe-flag bit number     (= 1)
+
+	Or to put it simpler: WSF_... = 1<<WSB_...
+
+AEDoor.library/ShowGFile
+
+   NAME
+        ShowGFile -- Show an /X file
+
+   SYNOPSIS
+        ShowGFile( dif, file )
+                   A1    A0
+
+        void ShowGFile(struct DIFace *,char *)
+
+   FUNCTION
+	Show a file using the proper extension depending on the user's
+	settings. This is the standard routine that AmiX uses to display
+	the bulletins, menus, ...
+
+   INPUTS
+        dif     - Ptr to DIFace structure
+	file	- Ptr to filename of file to show
+
+
+AEDoor.library/ShowFile
+
+   NAME
+        ShowFile -- Show a file
+
+   SYNOPSIS
+        ShowFile( dif, file )
+                  A1    A0
+
+        void ShowFile(struct DIFace *,char *)
+
+   FUNCTION
+	Show a file AS IS.
+
+   INPUTS
+        dif     - Ptr to DIFace structure
+	file	- Ptr to filename of file to show
+
+
+AEDoor.library/SetDT
+
+   NAME
+        SetDT -- Set Data
+
+   SYNOPSIS
+        SetDT( dif, id, str)
+                A1  D0  A0
+
+        void SetDT(struct DIFace *,ULONG,char *)
+
+   FUNCTION
+	Set/change one of the many data fields available in AmiX
+
+   INPUTS
+        dif     - Ptr to DIFace structure
+	id	- Data Identifier
+	str	- Ptr to a string that holds the new info
+
+   SEE ALSO
+	<amix/amix.i>
+
+
+AEDoor.library/GetDT
+
+   NAME
+        GetDT -- Get Data
+
+   SYNOPSIS
+        GetDT( dif, id, str)
+                A1  D0  A0
+
+        void GetDT(struct DIFace *,ULONG,char *)
+
+   FUNCTION
+	Get one of the many data fields available in AmiX
+
+   INPUTS
+        dif     - Ptr to DIFace structure
+	id	- Data Identifier
+	str	- Ptr to a string that contains additional information
+		  (if required, else set to NULL)
+
+   SEE ALSO
+	<amix/amix.i>
+
+
+AEDoor.library/GetStr
+
+   NAME
+        GetStr -- Get input from the user, supply a default setting
+ 
+   SYNOPSIS
+        pstring = GetStr( dif, length, defstr )
+           D0             A1     D1      A0
+ 
+        char *GetStr(struct DIFace *,ULONG, char *)
+ 
+   FUNCTION
+	The user is asked to enter something, but before that, the input
+	buffer is filled with the default string.
+ 
+   INPUTS
+        dif	- Ptr to DIFace structure
+	length	- max number of chars the user can enter
+	defstr	- default string
+ 
+   RESULT
+        pstring - Ptr to JHM_String field or
+		  NULL if Lost Carrier
+
+   NOTE
+	For the convinience of asm programmers, the Z flag will be set when
+	there was a loss of carrier
+
+
+AEDoor.library/CopyStr
+
+   NAME
+        CopyStr -- Get a fast copy of the JHM_String field
+ 
+   SYNOPSIS
+        CopyStr( dif, buffer )
+                  A1    A0
+ 
+        void CopyStr(struct DIFace *, char *)
+ 
+   FUNCTION
+	The JHM_String is copied to the buffer, you must make a copy of the
+	JHM_String because if you use another function, the contents of the
+	JHM_String will probably change.
+ 
+   INPUTS
+        dif	- Ptr to DIFace structure
+	buffer	- Ptr to a buffer big enough to contain a copy of the
+		  JHM_String field
+ 
+   NOTE
+	This routine doesn't check for anything, it just copies all the bytes
+	in the string entry until it reaches a NULL byte, so if the string is
+	not NULL terminated, ya can be damn sure it will damage some memory!
+
+
+AEDoor.library/HotKey
+
+   NAME
+        HotKey -- Prompts a user and wait for him to press a key   (V11)
+ 
+   SYNOPSIS
+        key = HotKey( dif, promptstr )
+        D0             A1     A0
+ 
+        LONG HotKey(struct DIFace *, char *)
+
+    FUNCTION
+        This function prompts the user with the given string , and waits
+        for a key to be pressed. ASCII code of pressed key is returned or
+	(LONG) -1 when a loss of carrier occured
+        You can provide a NULL value for promptstring.
+ 
+   INPUTS
+        dif	  - Ptr to DIFace structure
+	promptstr - Pointer to the string to be print when prompting.
+		    (or NULL)
+ 
+   RESULT
+        key - (LONG) returns ASCII code of pressed key or returns -1 if the
+              user lost carrier or if sysop wants to throw him off the board.
+
+   NOTE
+	For the convinience of asm programmers, the N flag will be set when
+	there was a loss of carrier (so a simple BMI after the JSR will do)
+
+   BUG FIX (V11)
+	When the entered character was negative ($80-$FF), the N flag was set
+	on return. This lead to asm doors misinterpreting this as a loss of
+	carrier!
+   BUG FIX (2.4)
+	Supplying a NULL pointer for the promptstr caused a harmless enforcer
+	hit.
+
+   SPECIAL NOTE
+	In the C pragrams, the routine is renamed to Hotkey() because the
+	HotKey() function was already defined in another library!
+
+
+AEDoor.library/PreCreateComm
+
+   NAME
+	PreCreateComm - PRIVATE FUNCTION!! Never use this one!! (V13)
+
+   SYNOPSIS
+	NOT 4 YOUR EYES!
+
+   FUNCTION
+	This function is used for the Multi Door support, and should never
+	be used by anyone!
+
+
+AEDoor.library/PostDeleteComm
+
+   NAME
+	PostDeleteComm - PRIVATE FUNCTION!! Never use this one!! (V13)
+
+   SYNOPSIS
+	NOT 4 YOUR EYES!
+
+   FUNCTION
+	This function is used for the Multi Door support, and should never
+	be used by anyone!
+
+                                --- EOF ---
