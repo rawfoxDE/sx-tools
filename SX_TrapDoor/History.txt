@@ -1,0 +1,44 @@
+
+                            -----------------
+                            FAMETrapDoor v1.0
+                            -----------------
+
+08-Dez-96
+*********
+
++First release.
+
+                            -----------------
+                            FAMETrapDoor v1.1
+                            -----------------
+
+11-Jan-97
+*********
+
+ Changed the argument template:
+
+ "NODE/K/N/A,DTERATE/K/N/A,CONNECTMSG/F/A"
+
+ Now the quotes ("") for the last argument (CONNECTMSG) are no longer
+ needed.
+
+ New example TrapDoor string:
+
+ 'FAME:Modules/FAMETrapDoor NODE=1 DTERATE=%B CONNECTMSG=%C'
+
+ This fixes a problem with the start from TrapDoor which failed on
+ FAMETrapDoor v1.0.
+
+                            -----------------
+                            FAMETrapDoor v1.2
+                            -----------------
+
+11-Jan-97
+*********
+
++Renamed the first template part "NODE/K/N/A" to "NODENR/K/N/A".
+
++Source is included now.
+
+ Note: The source can't be compiled with the puplic FAME includes!
+
