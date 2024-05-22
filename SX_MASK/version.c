@@ -1,0 +1,1 @@
+static char __version[] ="\0$VER: SX_MSG V1.0beta2 bY [r]FoX at ("__DATE__")";
