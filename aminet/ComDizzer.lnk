@@ -1,0 +1,4 @@
+FROM LIB:c.o "ComDizzer.o"
+TO "ComDizzer"
+LIB LIB:sc.lib LIB:amiga.lib
+
