@@ -1,0 +1,257 @@
+## version $VER: ZConnectLib.catalog 1.0 (20.7.97)
+## language deutsch
+## codeset 0
+;
+;
+MSG_ZCCHECK_NO_ABS
+Kein Absender (ABS)
+;Kein Absender (ABS)
+;
+MSG_ZCCHECK_NO_BET
+Kein Betreff (BET)
+;Kein Betreff (BET)
+;
+MSG_ZCCHECK_NO_EDA
+Kein Erstellungsdatum (EDA)
+;Kein Erstellungsdatum (EDA)
+;
+MSG_ZCCHECK_NO_EMP
+Kein Empfänger (EMP)
+;Kein Empfänger (EMP)
+;
+MSG_ZCCHECK_NO_LEN
+Keine Länge (LEN)
+;Keine Länge (LEN)
+;
+MSG_ZCCHECK_NO_MID
+Keine Message-ID (MID)
+;Keine Message-ID (MID)
+;
+MSG_ZCCHECK_NO_ROT
+Kein Routepfad (ROT)
+;Kein Routepfad (ROT)
+;
+MSG_ZCCHECK_TOO_MANY_ABS
+Zu viele Absender (ABS)
+;Zu viele Absender (ABS)
+;
+MSG_ZCCHECK_TOO_MANY_BET
+Zu viele Betreffs (BET)
+;Zu viele Betreffs (BET)
+;
+MSG_ZCCHECK_TOO_MANY_CHARSET
+Zu viele Zeichensatzfestlegungen (CHARSET)
+;Zu viele Zeichensatzfestlegungen (CHARSET)
+;
+MSG_ZCCHECK_TOO_MANY_CRYPT
+Zu viele Verschlüsselungsfestlegungen (CRYPT)
+;Zu viele Verschlüsselungsfestlegungen (CRYPT)
+;
+MSG_ZCCHECK_TOO_MANY_CRYPT_CONTENT_CHARSET
+Zu viele CRYPT-CONTENT-CHARSET
+;Zu viele CRYPT-CONTENT-CHARSET
+;
+MSG_ZCCHECK_TOO_MANY_CRYPT_CONTENT_KOM
+Zu viele CRYPT-CONTENT-KOM
+;Zu viele CRYPT-CONTENT-KOM
+;
+MSG_ZCCHECK_TOO_MANY_CRYPT_CONTENT_TYP
+Zu viele CRYPT-CONTENT-TYP
+;Zu viele CRYPT-CONTENT-TYP
+;
+MSG_ZCCHECK_TOO_MANY_DDA
+Zu viele Dateidaten (DDA)
+;Zu viele Dateidaten (DDA)
+;
+MSG_ZCCHECK_TOO_MANY_EDA
+Zu viele Erstellungsdaten (EDA)
+;Zu viele Erstellungsdaten (EDA)
+;
+MSG_ZCCHECK_TOO_MANY_ERR
+Zu viele Fehlerkennungen (ERR)
+;Zu viele Fehlerkennungen (ERR)
+;
+MSG_ZCCHECK_TOO_MANY_FILE
+Zu viele Dateinamen (FILE)
+;Zu viele Dateinamen (FILE)
+;
+MSG_ZCCHECK_TOO_MANY_KOM
+Zu viele Kommentarlängen (KOM)
+;Zu viele Kommentarlängen (KOM)
+;
+MSG_ZCCHECK_TOO_MANY_LANGUAGE
+Zu viele Nachrichtensprachen (LANGUAGE)
+;Zu viele Nachrichtensprachen (LANGUAGE)
+;
+MSG_ZCCHECK_TOO_MANY_LDA
+Zu viele Löschdaten (LDA)
+;Zu viele Löschdaten (LDA)
+;
+MSG_ZCCHECK_TOO_MANY_LEN
+Zu viele Nachrichtenlängen (LEN)
+;Zu viele Nachrichtenlängen (LEN)
+;
+MSG_ZCCHECK_TOO_MANY_MAILER
+Zu viele Mailer-Informationen (MAILER)
+;Zu viele Mailer-Informationen (MAILER)
+;
+MSG_ZCCHECK_TOO_MANY_MID
+Zu viele Message-IDs (MID)
+;Zu viele Message-IDs (MID)
+;
+MSG_ZCCHECK_TOO_MANY_MIME
+Zu viele MIME-Codierungsarten (MIME)
+;Zu viele MIME-Codierungsarten (MIME)
+;
+MSG_ZCCHECK_TOO_MANY_O_EDA
+Zu viele Original-Erstellungsdaten (O-EDA)
+;Zu viele Original-Erstellungsdaten (O-EDA)
+;
+MSG_ZCCHECK_TOO_MANY_O_ROT
+Zu viele Original-Routepfade (O-ROT)
+;Zu viele Original-Routepfade (O-ROT)
+;
+MSG_ZCCHECK_TOO_MANY_OAB
+Zu viele Original-Absender (OAB)
+;Zu viele Original-Absender (OAB)
+;
+MSG_ZCCHECK_TOO_MANY_ORG
+Zu viele Organisationen (ORG)
+;Zu viele Organisationen (ORG)
+;
+MSG_ZCCHECK_TOO_MANY_PGP
+Zu viele PGP-Aufforderungen (PGP)
+;Zu viele PGP-Aufforderungen (PGP)
+;
+MSG_ZCCHECK_TOO_MANY_PGP_ID
+Zu viele PGP-UserInnen-IDs (PGP-ID)
+;Zu viele PGP-UserInnen-IDs (PGP-ID)
+;
+MSG_ZCCHECK_TOO_MANY_PGP_KEY_AVAIL
+Zu viele PGP-KEY-AVAIL
+;Zu viele PGP-KEY-AVAIL
+;
+MSG_ZCCHECK_TOO_MANY_PGP_KEY_COMPROMISE
+Zu viele PGP-Public-Key-Widerrufungen (PGP-KEY-COMPROMISE)
+;Zu viele PGP-Public-Key-Widerrufungen (PGP-KEY-COMPROMISE)
+;
+MSG_ZCCHECK_TOO_MANY_PGP_KEY_OWN
+Zu viele PGP-Public-Keys (PGP-KEY-OWN)
+;Zu viele PGP-Public-Keys (PGP-KEY-OWN)
+;
+MSG_ZCCHECK_TOO_MANY_PGP_PUBLIC_KEY
+Zu viele PGP-Public-Keys (PGP-PUBLIC-KEY)
+;Zu viele PGP-Public-Keys (PGP-PUBLIC-KEY)
+;
+MSG_ZCCHECK_TOO_MANY_PGP_SIG
+Zu viele PGP-Signaturen (PGP-SIG)
+;Zu viele PGP-Signaturen (PGP-SIG)
+;
+MSG_ZCCHECK_TOO_MANY_POST
+Zu viele Postanschriften (POST)
+;Zu viele Postanschriften (POST)
+;
+MSG_ZCCHECK_TOO_MANY_ROT
+Zu viele Routepfade (ROT)
+;Zu viele Routepfade (ROT)
+;
+MSG_ZCCHECK_TOO_MANY_SIGNED
+Zu viele Signatur-Informationen (SIGNED)
+;Zu viele Signatur-Informationen (SIGNED)
+;
+MSG_ZCCHECK_TOO_MANY_SPERRFRIST
+Zu viele Sperrfristen (SPERRFRIST)
+;Zu viele Sperrfristen (SPERRFRIST)
+;
+MSG_ZCCHECK_TOO_MANY_TELEFON
+Zu viele Telefonnummern (TELEFON)
+;Zu viele Telefonnummern (TELEFON)
+;
+MSG_ZCCHECK_TOO_MANY_TRACE
+Zu viele Routinganalysen (TRACE)
+;Zu viele Routinganalysen (TRACE)
+;
+MSG_ZCCHECK_TOO_MANY_TYP
+Zu viele Nachrichtentypen (TYP)
+;Zu viele Nachrichtentypen (TYP)
+;
+MSG_ZCCHECK_TOO_MANY_VER
+Zu viele VertreterInnen (VER)
+;Zu viele VertreterInnen (VER)
+;
+MSG_ZCCHECK_TOO_MANY_WAB
+Zu viele weiterleitende Absender (WAB)
+;Zu viele weiterleitende Absender (WAB)
+;
+MSG_ZCCHECK_TOO_MANY_ZUSAMMENFASSUNG
+Zu viele Zusammenfassungen (ZUSAMMENFASSUNG)
+;Zu viele Zusammenfassungen (ZUSAMMENFASSUNG)
+;
+MSG_ZCCHECK_TOO_MANY_CONTROL_ADD
+Zu viele CONTROL:ADD
+;Zu viele CONTROL:ADD
+;
+MSG_ZCCHECK_TOO_MANY_CONTROL_CANCEL
+Zu viele CONTROL:CANCEL
+;Zu viele CONTROL:CANCEL
+;
+MSG_ZCCHECK_TOO_MANY_CONTROL_DEL
+Zu viele CONTROL:DEL
+;Zu viele CONTROL:DEL
+;
+MSG_ZCCHECK_TOO_MANY_STAT_AUTO
+Zu viele STAT:AUTO
+;Zu viele STAT:AUTO
+;
+MSG_ZCCHECK_TOO_MANY_STAT_CTL
+Zu viele STAT:CTL
+;Zu viele STAT:CTL
+;
+MSG_ZCCHECK_TOO_MANY_STAT_EB
+Zu viele STAT:EB
+;Zu viele STAT:EB
+;
+MSG_ZCCHECK_TOO_MANY_STAT_NOCIPHER
+Zu viele STAT:NOCIPHER
+;Zu viele STAT:NOCIPHER
+;
+MSG_ZCCHECK_TOO_MANY_STAT_NOKOP
+Zu viele STAT:NOKOP
+;Zu viele STAT:NOKOP
+;
+MSG_ZCCHECK_TOO_MANY_STAT_TRACE
+Zu viele STAT:TRACE
+;Zu viele STAT:TRACE
+;
+MSG_ZCCHECK_WRONG_EDA
+Falsches Erstellungsdatum (EDA)
+;Falsches Erstellungsdatum (EDA)
+;
+MSG_ZCCHECK_WRONG_DDA
+Falsches Dateidatum (DDA)
+;Falsches Dateidatum (DDA)
+;
+MSG_ZCCHECK_WRONG_LDA
+Falsches Löschdatum (LDA)
+;Falsches Löschdatum (LDA)
+;
+MSG_ZCCHECK_WRONG_O_EDA
+Falsche Original-Erstellungsdatum (O-EDA)
+;Falsche Original-Erstellungsdatum (O-EDA)
+;
+MSG_ZCCHECK_WRONG_SPERRFRIST
+Falsche Sperrfrist (SPERRFRIST)
+;Falsche Sperrfrist (SPERRFRIST)
+;
+MSG_ZCCHECK_WRONG_LEN
+Falsche Länge (LEN)
+;Falsche Länge (LEN)
+;
+MSG_ZCCHECK_WRONG_KOM
+Falsche Kommentarlänge (KOM)
+;Falsche Kommentarlänge (KOM)
+;
+MSG_ZCCHECK_WRONG_PRIO
+Falsche Priorität (PRIO)
+;Falsche Priorität (PRIO)
+;

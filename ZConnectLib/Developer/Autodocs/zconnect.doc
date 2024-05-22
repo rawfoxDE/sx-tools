@@ -1,0 +1,953 @@
+TABLE OF CONTENTS
+
+zconnect.library/--announce--
+zconnect.library/ZCon_AppendHeaderLine
+zconnect.library/ZCon_ASCII2QP
+zconnect.library/ZCon_CheckHeader
+zconnect.library/ZCon_CheckRoute
+zconnect.library/ZCon_CreateDate
+zconnect.library/ZCon_CreateHeader
+zconnect.library/ZCon_CreateID
+zconnect.library/ZCon_FreeHeader
+zconnect.library/ZCon_GetDate
+zconnect.library/ZCon_GetHeader
+zconnect.library/ZCon_GetHeaderLineContents
+zconnect.library/ZCon_GetZConStr
+zconnect.library/ZCon_HeaderToIBM
+zconnect.library/ZCon_HeaderToISO
+zconnect.library/ZCon_NewCreateID
+zconnect.library/ZCon_QP2ASCII
+zconnect.library/ZCon_RemHeaderLines
+zconnect.library/ZCon_RenameHeaderLines
+zconnect.library/ZCon_StringToIBM
+zconnect.library/ZCon_StringToISO
+zconnect.library/ZCon_WriteHeader
+zconnect.library/--announce--                   zconnect.library/--announce--
+
+   TITLE
+       zconnect.library
+
+   VERSION
+       5.0
+
+   RELEASE DATE
+       15.02.1998
+
+   DESCRIPTION
+       zconnect.library is a shared library for easy processing of headers
+       of so called ZConnect message buffers. It also offers several support
+       functions, such as functions for creating date strings or message
+       IDs.
+
+       For those who don't know what ZConnect is: ZConnect is a format like
+       the one specified in RFC 822 ("Standard for the format of ARPA
+       internet text messages") - but simply another ;)
+
+       Please note that the definitions of ZConnect are currently only
+       German, that's why the documentation of zconnect.library is German,
+       too.
+
+   SPECIAL REQUIREMENTS
+       OS 2.04+
+
+   AVAILABILITY
+       http://home.pages.de/~bZ
+       ftp://ftp.wustl.edu/pub/aminet/comm/misc/bZ_ZConnectLib.lha
+
+   PRICE
+       Freeware
+       Please read the additional License.txt document for further details.
+
+   AUTHOR
+       Maik "BLiZZeR" Schreiber <BLiZZeR@dame.de>
+       http://home.pages.de/~bZ
+
+   DISTRIBUTION
+       Please read the additional License.txt document for further details.
+zconnect.library/ZCon_AppendHeaderLine zconnect.library/ZCon_AppendHeaderLine
+
+   NAME
+       ZCon_AppendHeaderLine -- Fügt eine Headerzeile an.
+
+   SYNOPSIS
+       line = ZCon_AppendHeaderLine(list, id, contents)
+       D0                           A0    A1  A2
+
+       struct ZConnectHeaderLine *ZCon_AppendHeaderLine(struct List *,
+           STRPTR, STRPTR);
+
+   FUNCTION
+       Diese Funktion hängt eine Headerzeile an einen ZConnect-Header an.
+
+   INPUTS
+       list     - Zeiger auf die List-Struktur des Headers
+       id       - Kennung der anzuhängenden Headerzeile (z.B. "ABS")
+                  *ohne* ":"
+       contents - Inhalt der anzuhängenden Headerzeile oder NULL
+
+   RESULT
+       line     - Zeiger auf die ZConnectHeaderLine-Struktur der ange-
+                  hängten Headerzeile oder NULL im Fehlerfall
+
+   NOTES
+       Die Elemente zhl_ID und zhl_Contents der ZConnectHeaderLine-Struktur
+       werden mittels AllocVec() angelegt. Sollen sie programmtechnisch
+       verändert werden, ist der Speicherbereich einfach mittels FreeVec()
+       freizugeben und ein neuer mittels AllocVec() zu allokieren. Die
+       Adresse wird dann wieder in der Struktur abgelegt.
+
+       Ein eventueller Doppelpunkt am Ende von id wird abgetrennt.
+
+       Eventuelle führende Whitespaces am Anfang von contents werden
+       abgetrennt.
+
+       Die Headerzeilen werden mittels Enqueue() an die Liste gehängt,
+       das Feld zhl_ListNode.ln_Pri der ZConnectHeaderLine-Struktur kann
+       also benutzt werden.
+
+       Ab V2 kann für contents auch NULL übergeben werden, der Inhalt der
+       Headerzeile ist dann leer ("").
+
+   BUGS
+       Frühere Versionen akzeptierten keinen Leerstring ("") für contents.
+       Dies wurde in V2 behoben. Workaround: " " oder "\t" für contents
+       übergeben.
+
+   SEE ALSO
+       ZCon_RemHeaderLines(), exec.library/Enqueue()
+zconnect.library/ZCon_ASCII2QP                 zconnect.library/ZCon_ASCII2QP
+
+   NAME
+       ZCon_ASCII2QP -- Konvertiert ASCII zu Quoted-Printable. (V5)
+
+   SYNOPSIS
+       count = ZCon_ASCII2QP(source, dest)
+       D0                    A1      A2
+
+       ULONG ZCon_ASCII2QP(STRPTR, STRPTR);
+
+   FUNCTION
+       Diese Funktion konvertiert alle Normalzeichen in einem String in
+       Quoted-Printable-Zeichen (z.B. "ß" für "=DF").
+
+   INPUTS
+       source - Zeiger auf einen String mit normalen Zeichen
+       dest   - Zeiger auf den Zielpuffer, der den konvertierten String auf-
+                nehmen soll. Der Puffer muß mind. 3x so groß wie source sein
+                (inkl. 0-Byte).
+
+   RESULT
+       count  - Anzahl der Zeichen, die dest nach der Konvertierung enthält
+
+   EXAMPLE
+       UBYTE source[100] = "äöüÄÖÜß";
+       UBYTE dest[100];
+       ULONG len;
+
+       len = ZCon_ASCII2QP(source, dest);
+
+       /* Ausgabe: "=E4=F6=FC=C4=D6=DC=DF (21)" */
+       printf("%s (%lu)\n", dest, len);
+
+   NOTES
+       Der konvertierte String wird mit einem 0-Byte abgeschlossen.
+
+       Es werden alle Zeichen außer ASCII 32-127 konvertiert.
+
+   SEE ALSO
+       ZCon_QP2ASCII()
+zconnect.library/ZCon_CheckHeader           zconnect.library/ZCon_CheckHeader
+
+   NAME
+       ZCon_CheckHeader -- Checkt einen kompletten ZConnect-Header.
+
+   SYNOPSIS
+       error = ZCon_CheckHeader(list)
+       D0                       A0
+
+       ULONG ZCon_CheckHeader(struct List *);
+
+   FUNCTION
+       Diese Funktion überprüft einen kompletten ZConnect-Header.
+       Dabei werden die folgenden Checks durchgeführt:
+
+       - Alle Pflicht-Headerzeilen müssen auftreten.
+         Befindet sich eine Pflicht-Headerzeile nicht im Header, gibt die
+         Funktion ZCCHECK_NO_xxx zurück, wobei xxx der Kennung der im
+         Header fehlenden Headerzeile entspricht.
+
+       - Alle Headerzeilen, die nur einmal auftreten dürfen, werden
+         überprüft.
+         Befindet sich eine Headerzeilen-Kennung mehrfach im Header, gibt
+         die Funktion ZCCHECK_TOO_MANY_xxx zurück, wobei xxx der Kennung
+         der im Header mehrfach auftretenden Headerzeile entspricht.
+
+       - Die Inhalte der Headerzeilen EDA, DDA, LDA, O-EDA und SPERRFRIST
+         werden überprüft.
+         Entsprechen die Inhalte nicht der Definition in der ZConnect-Doku-
+         mentation, gibt die Funktion je nach Kennung ZCCHECK_WRONG_EDA,
+         ZCCHECK_WRONG_DDA, ZCCHECK_WRONG_LDA, ZCCHECK_WRONG_O_EDA bzw.
+         ZCCHECK_WRONG_SPERRFRIST zurück.
+
+       - Die Inhalte der Headerzeilen LEN und KOM werden geprüft, wobei
+         KOM eine Zahl enthalten muß, die kleiner oder gleich der Zahl
+         in LEN ist. Für beide ist der Wert 0 erlaubt.
+         Enthält die Headerzeile LEN keine reine Zahl oder ist diese
+         Zahl kleiner als die Zahl in der Headerzeile KOM, gibt die
+         Funktion ZCCHECK_WRONG_LEN zurück. Enthält die Headerzeile KOM
+         keine reine Zahl, gibt die Funktion ZCCHECK_WRONG_KOM zurück.
+
+       - Der Inhalt der Headerzeile PRIO wird überprüft.
+         Enthält diese nicht "0", "10" oder "20", gibt die Funktion
+         ZCCHECK_WRONG_PRIO zurück.
+
+   INPUTS
+       list  - Zeiger auf die List-Struktur des zu überprüfenden ZConnect-
+               Headers
+
+   RESULT
+       error - ZCCHECK_OK, wenn der Header in Ordnung ist, sonst eine der
+               Fehlermeldungen ZCCHECK_xxx
+
+   NOTES
+       Es wird nicht zwischen Groß- und Kleinschreibung unterschieden.
+
+       Unbekannte Headerzeilen-Kennungen, die nicht mit dem in der
+       ZConnect-Dokumentation definierten Präfix "X-" beginnen, werden
+       nicht als unbekannt erkannt, da die Weiterentwicklung von ZConnect
+       derzeit nicht geklärt ist. Für weitere Fragen ist die Newsgroup
+       de.comm.protocols.zconnect von Interesse.
+
+       Folgende Headerzeilen werden erst ab V2 überprüft:
+
+         CONTROL: ADD      -----.
+         CONTROL: CANCEL        |
+         CONTROL: DEL           |
+         STAT: AUTO             |
+         STAT: CTL              |-- dürfen jeweils nur einmal auftreten
+         STAT: EB               |
+         STAT: NOCIPHER         |
+         STAT: NOKOP            |
+         STAT: TRACE       -----'
+
+       Eventuell werden in Zukunft noch weitere Fehlermeldungen implemen-
+       tiert.
+
+   SEE ALSO
+       <libraries/zconnect.h>,
+       ZConnect-Dokumentation (Kapitel "Datumsangaben")
+zconnect.library/ZCon_CheckRoute             zconnect.library/ZCon_CheckRoute
+
+   NAME
+       ZCon_CheckRoute -- Findet ein System in einem Routepfad. (V3)
+
+   SYNOPSIS
+       count = ZCon_CheckRoute(route, system)
+       D0                      A1     A2
+
+       ULONG ZCon_CheckRoute(STRPTR, STRPTR);
+
+   FUNCTION
+       Diese Funktion stellt fest, wie oft ein bestimmter Systemname (inkl.
+       Domain) in einem Routepfad auftritt.
+
+   INPUTS
+       route  - der zu durchsuchende Routepfad
+       system - das zu suchende System (evtl. inkl. Domain)
+
+   RESULT
+       count  - Anzahl der Auftreten des zu suchenden Systemnamen
+
+   EXAMPLE
+       /* dies liefert "1" */
+       printf("%lu\n", ZCon_CheckRoute("a!b!c", "b"));
+
+       /* dies liefert auch "1" */
+       printf("%lu\n", ZCon_CheckRoute("a!b!c", "B"));
+
+       /* dies liefert ebenfalls "1" */
+       printf("%lu\n", ZCon_CheckRoute("a!bc!B!cb!b.do.main!c", "b"));
+
+   NOTES
+       Es wird nicht zwischen Groß- und Kleinschreibung unterschieden.
+
+       Systeme werden nur gefunden, wenn sie wie im Routepfad angegeben
+       werden. Zum Beispiel wird das System "ABC" niemals gefunden, wenn es
+       im Routepfad nur als "ABC.de" auftritt.
+
+   BUGS
+       Bis einschließlich V4 wurde durch einen Fehler in der LVO-Tabelle der
+       Library anstatt dieser Funktion die Funktion ZCon_CreateHeader() auf-
+       gerufen. Dies ist in V5 behoben. Workaround: Explizit V5 öffnen.
+
+   SEE ALSO
+       ZConnect-Dokumentation (Kapitel "Rekursionscheck anhand des Route-
+       pfads (ROT)")
+zconnect.library/ZCon_CreateDate             zconnect.library/ZCon_CreateDate
+
+   NAME
+       ZCon_CreateDate -- Erzeugt ZConnect-Datumsangabe. (V2)
+
+   SYNOPSIS
+       ZCon_CreateDate(date, offset, summertime, buffer)
+                       A1    D0      D1          A2
+
+       void ZCon_CreateDate(struct ClockData *, WORD, UBYTE, STRPTR);
+
+   FUNCTION
+       Diese Funktion erzeugt eine Datumsangabe im ZConnect-Format. Dabei
+       wird das Offset zur GMT addiert.
+
+   INPUTS
+       date       - Zeiger auf eine ClockData-Struktur, die die aktuelle
+                    Systemzeit enthält
+       offset     - zu addierendes Offset zur GMT in Minuten
+       summertime - ZC_SUMMERTIME, wenn ein "S" für Sommerzeit eingefügt
+                    werden soll; ZC_WINTERTIME, wenn ein "W" für Winterzeit
+                    eingefügt werden soll; ZC_IGNORE, wenn keine Sommer-/
+                    Winterzeit-Angabe eingefügt werden soll
+       buffer     - Zeiger auf einen Puffer, in den die Datumsangabe
+                    geschrieben werden soll (muß mind. 22 Bytes groß sein!)
+
+   EXAMPLE
+       UBYTE             buffer[22];
+       struct DateStamp  ds;
+       struct ClockData  cd;
+       struct Locale    *loc;
+       WORD              offs = 0;
+
+       DateStamp(&ds);
+       Amiga2Date((ULONG) ds.ds_Days * 86400 +
+                  (ULONG) ds.ds_Minute * 60 +
+                  (ULONG) ds.ds_Tick / TICKS_PER_SECOND,
+                  &cd);
+
+       if (loc = OpenLocale(NULL))
+       {
+         offs = (WORD) loc->loc_GMTOffset;
+         CloseLocale(NULL);
+       }
+
+       ZCon_CreateDate(&cd, offs, ZC_IGNORE, buffer);
+       ZCon_AppendHeaderLine(header, "EDA", buffer);
+
+   NOTES
+       Das zu übergebende Offset muß immer genau dem negativen Wert aus der
+       ZConnect-Dokumentation entsprechen, da es addiert wird! Ist also die
+       MET mit +1:00 gegeben, muß -60 (-1:00) übergeben werden!
+
+       Das korrekte Offset kann bspw. ohne Änderungen direkt aus einer
+       Locale-Struktur übernommen werden (s.o.).
+
+   SEE ALSO
+       ZCon_GetDate()
+zconnect.library/ZCon_CreateHeader         zconnect.library/ZCon_CreateHeader
+
+   NAME
+       ZCon_CreateHeader -- Erzeugt einen neuen ZConnect-Header. (V3)
+
+   SYNOPSIS
+       header = ZCon_CreateHeader()
+       D0
+
+       struct List *ZCon_CreateHeader(void);
+
+   FUNCTION
+       Diese Funktion erzeugt einen neuen (leeren) ZConnect-Header, der
+       mittels ZCon_FreeHeader() wieder freigegeben werden muß.
+
+       Diese Funktion hätte eigentlich schon seit V1 existieren müssen...
+
+   RESULT
+       header - Zeiger auf die List-Struktur des erzeugten ZConnect-Headers
+                oder NULL im Fehlerfall
+
+   EXAMPLE
+       struct List *header;
+
+       if (header = ZCon_CreateHeader())
+       {
+         ZCon_AppendHeaderLine(header, "ABS", "BLiZZeR@dame.de");
+         ZCon_AppendHeaderLine(header, "EMP", "user@host.do.main");
+
+         ZCon_WriteHeader(handle, header);
+
+         ZCon_FreeHeader(header);
+       }
+
+   SEE ALSO
+       ZCon_FreeHeader()
+zconnect.library/ZCon_CreateID                 zconnect.library/ZCon_CreateID
+
+   NAME
+       ZCon_CreateID -- Erzeugt einzigartige ID. (V2) (OBSOLETE)
+
+   SYNOPSIS
+       id = ZCon_CreateID(string)
+       D0                 A1
+
+       ULONG ZCon_CreateID(STRPTR);
+
+   FUNCTION
+       Diese Funktion erzeugt eine einzigartige ID, die z.B. als Message-ID
+       für ZConnect-Nachrichten verwandt werden kann.
+
+   INPUTS
+       string - Ein beliebiger String, der zur Erzeugung der ID herangezogen
+                wird. Hier kann z.B. die Adresse des Absenders übergeben
+                werden.
+
+   RESULT
+       id     - die erzeugte ID
+
+   EXAMPLE
+       UBYTE  buffer[256];
+       STRPTR abs,
+              emp;
+
+       abs = "BLiZZeR@dame.de";
+       emp = "user@host.do.main";
+
+       ZCon_AppendHeaderLine(header, "ABS", abs);
+       ZCon_AppendHeaderLine(header, "EMP", emp);
+
+       /* erzeugen einer weltweit einmaligen Message-ID */
+       sprintf(buffer, "%lx%lx%s",
+               ZCon_CreateID(abs),
+               ZCon_CreateID(emp),
+               strchr(abs, '@'));
+       ZCon_AppendHeaderLine(header, "MID", buffer);
+
+   NOTES
+       Die ID wird mittels einer Hashfunktion erzeugt, die von der aktuellen
+       Systemzeit, dem übergebenen String sowie dem Rückgabewert der Funk-
+       tion GetUniqueID() der utility.library abhängig ist.
+
+       Die Wahrscheinlichkeit, daß jemals die gleiche ID erzeugt wird, ist
+       daher nahezu 0.
+
+       Bitte benutzen Sie ZCon_NewCreateID() statt dieser Funktion, da sie
+       einen besseren Algorithmus verwendet.
+
+   SEE ALSO
+       ZCon_NewCreateID()
+zconnect.library/ZCon_FreeHeader             zconnect.library/ZCon_FreeHeader
+
+   NAME
+       ZCon_FreeHeader -- Gibt kompletten ZConnect-Header frei.
+
+   SYNOPSIS
+       ZCon_FreeHeader(list)
+                       A0
+
+       void ZCon_FreeHeader(struct List *);
+
+   FUNCTION
+       Diese Funktion gibt einen kompletten ZConnect-Header frei, der mit
+       ZCon_CreateHeader() oder ZCon_GetHeader() angelegt wurde.
+
+   INPUTS
+       list - Zeiger auf die List-Struktur des freizugebenden ZConnect-
+              Headers oder NULL
+
+   EXAMPLE
+       list = ZCon_GetHeader(handle);
+
+       /* ... */
+
+       ZCon_FreeHeader(list);
+zconnect.library/ZCon_GetDate                   zconnect.library/ZCon_GetDate
+
+   NAME
+       ZCon_GetDate -- Liest Datum aus ZConnect-Datumsangabe aus. (V2)
+
+   SYNOPSIS
+       offset = ZCon_GetDate(buffer, date, summertime)
+       D0                    A1      A2    A3
+
+       WORD ZCon_GetDate(STRPTR, struct ClockData *, UBYTE *);
+
+   FUNCTION
+       Diese Funktion liest ein Datum aus einer ZConnect-Datumsangabe.
+
+   INPUTS
+       buffer     - Zeiger auf einen Puffer, der eine gültige ZConnect-
+                    Datumsangabe enthält
+       date       - Zeiger auf eine ClockData-Struktur, die das ausgelesene
+                    Datum aufnehmen soll (es werden *alle* Elemente der
+                    Struktur korrekt gesetzt)
+       summertime - Zeiger auf ein UBYTE, das die Sommer-/Winterzeit-Angabe
+                    aufnehmen soll (ZC_WINTERTIME, wenn ein "W" für Winter-
+                    zeit angegeben war; ZC_SUMMERTIME, wenn ein "S" für
+                    Sommerzeit angegeben war; ZC_IGNORE, wenn keines der
+                    beiden angegeben war)
+
+
+   RESULT
+       offset     - das in der Datumsangabe angegebene Offset in Minuten
+
+   EXAMPLE
+       WORD             offset;
+       struct ClockData cd;
+       UBYTE            summertime;
+
+       offset = ZCon_GetDate("19970608212044S+2", &cd, &summertime);
+
+       printf("%02u.%02u.%u %02u:%02u:%02u, ",
+              cd.mday, cd.month, cd.year, cd.hour, cd.min, cd.sec);
+       if (summertime != ZC_IGNORE)
+         printf("%szeit, ",
+                (summertime == ZC_WINTERTIME) ? "Winter" : "Sommer");
+       printf("Offset: %d min\n", offset);
+
+   SEE ALSO
+       ZCon_CreateDate()
+zconnect.library/ZCon_GetHeader               zconnect.library/ZCon_GetHeader
+
+   NAME
+       ZCon_GetHeader -- Liest ZConnect-Header aus Datei.
+
+   SYNOPSIS
+       list = ZCon_GetHeader(filehandle)
+       D0                    A1
+
+       struct List *ZCon_GetHeader(BPTR);
+
+   FUNCTION
+       Diese Funktion liest einen kompletten ZConnect-Header aus einer
+       Datei in eine List-Struktur. Die Nodes der List-Struktur entsprechen
+       nach dem Einlesen der Struktur ZConnectHeaderLine.
+
+   INPUTS
+       filehandle - Zeiger auf das FileHandle der zu lesenden Datei
+
+   RESULT
+       list       - Zeiger auf die List-Struktur, die mittels
+                    ZCon_FreeHeader() wieder freigegeben werden muß,
+                    oder NULL im Fehlerfall
+
+   EXAMPLE
+       BPTR         handle;
+       struct List *list;
+
+       handle = Open(filename, MODE_OLDFILE);
+       list = ZCon_GetHeader(handle);
+
+       if (list)
+       {
+         /* Ausgeben aller Headerzeilen */
+         if (!IsListEmpty(list))
+         {
+           struct ZConnectHeaderLine *l =
+               (struct ZConnectHeaderLine *) list->lh_Head;
+
+           do
+           {
+             printf("%s: %s\n", l->zhl_ID, l->zhl_Contents);
+             l = (struct ZConnectHeaderLine *) l->zhl_ListNode.ln_Succ;
+           }
+           while ((APTR) l != (APTR) &list->lh_Tail);
+         }
+       }
+
+   NOTES
+       Die Elemente zhl_ID und zhl_Contents der ZConnectHeaderLine-Struktur
+       werden mittels AllocVec() angelegt. Sollen sie programmtechnisch
+       verändert werden, ist der Speicherbereich einfach mittels FreeVec()
+       freizugeben und ein neuer mittels AllocVec() zu allokieren. Die
+       Adresse wird dann wieder in der Struktur abgelegt.
+
+       Das Einlesen der Headerzeilen geschieht mit FGets(). Es ist daher
+       darauf zu achten, nur gepufferte Ein-/Ausgabe (FRead()) zu benutzen.
+
+       Das Element zhl_ID der ZConnectHeaderLine-Struktur enthält nur die
+       reine Headerzeilen-Kennung, also ohne den Doppelpunkt.
+
+       Eventuell führende Whitespaces werden vom Element zhl_Contents der
+       ZConnectHeaderLine-Struktur abgetrennt.
+
+       Die Elemente zhl_ID und zhl_Contents der ZConnectHeaderLine-Struktur
+       werden (bis auf die o.g. Änderungen) unverändert eingelesen.
+
+       Der eingelesene Header wird nicht gecheckt.
+
+   SEE ALSO
+       ZCon_HeaderToISO(), ZCon_CheckHeader(), dos.library/FRead(),
+       IsListEmpty()
+zconnect.library/ZCon_GetHeaderLineContentslibrary/ZCon_GetHeaderLineContents
+
+   NAME
+       ZCon_GetHeaderLineContents -- Holt Inhalt einer Headerzeile.
+
+   SYNOPSIS
+       contents = ZCon_GetHeaderLineContents(list, id, storage)
+
+       STRPTR ZCon_GetHeaderLineContents(struct List *, STRPTR,
+           struct ZConnectHeaderLine **);
+
+   FUNCTION
+       Diese Funktion holt den Inhalt einer Headerzeile aus einem ZConnect-
+       Header.
+
+   INPUTS
+       list     - Zeiger auf die List-Struktur des zu untersuchenden
+                  ZConnect-Headers
+       id       - Kennung der zu suchenden Headerzeile *ohne* ":"
+       storage  - Zeiger auf einen Zeiger auf eine ZConnectHeaderLine-
+                  Struktur, der einen Zeiger auf eine ZConnectHeaderLine-
+                  Struktur zu weiteren Abarbeitung des Header aufnimmt
+                  (muß vor dem ersten Aufruf mit NULL initialisiert
+                  werden). Ist keine weitere Abarbeitung gewünscht, ist
+                  NULL zu übergeben.
+
+   RESULT
+       contents - Zeiger auf das Element zhl_Contents der ZConnectHeader-
+                  Line-Struktur, in der die Kennung auftrat
+
+   EXAMPLE
+       /* Ausgeben des Inhalts der ABS:-Headerzeile */
+       STRPTR c;
+
+       c = ZCon_GetHeaderLineContents(list, "ABS", NULL);
+       if (c)
+         printf("Absender: %s\n", l);
+
+
+       /* Ausgeben aller EMP:-Headerzeilen */
+       STRPTR c;
+       struct ZConnectHeaderLine *store = NULL;
+
+       while (c = ZCon_GetHeaderLineContents(list, "EMP", &store))
+         printf("Empfänger: %s\n", c);
+
+   NOTES
+       Es wird nicht zwischen Groß- und Kleinschreibung unterschieden.
+zconnect.library/ZCon_GetZConStr             zconnect.library/ZCon_GetZConStr
+
+   NAME
+       ZCon_GetZConStr -- Holt String aus Locale-Catalog. (V3)
+
+   SYNOPSIS
+       string = ZCon_GetZConStr(id)
+       D0                       D0
+
+       STRPTR ZCon_GetZConStr(ULONG);
+
+   FUNCTION
+       Diese Funktion holt einen String aus dem Locale-Catalog der
+       zconnect.library, der beim ersten Öffnen der Library automatisch
+       geladen wird.
+
+   INPUTS
+       id     - die Nummer des gewünschten Strings im Catalog; die Rückgabe-
+                werte von ZCon_CheckHeader() können hierbei direkt benutzt
+                werden
+
+   RESULT
+       string - Zeiger auf den String im Catalog (read-only!) oder NULL im
+                Fehlerfall (kein Catalog vorhanden, locale.library konnte
+                nicht geöffnet werden, gewünschter String nicht vorhanden
+                usw.)
+
+   EXAMPLE
+       ULONG error;
+
+       if (error = ZCon_CheckHeader(header))
+       {
+         STRPTR text;
+
+         if (text = ZCon_GetZConStr(error))
+           printf("%s.\n", text);
+         else
+           puts("Kein Fehlertext verfügbar.");
+       }
+       else
+         puts("Keine Fehler.");
+
+   SEE ALSO
+       MailDemon.cd
+zconnect.library/ZCon_HeaderToIBM           zconnect.library/ZCon_HeaderToIBM
+
+   NAME
+       ZCon_HeaderToIBM -- Wandelt Header in IBM-Umlaute.
+
+   SYNOPSIS
+       ZCon_HeaderToIBM(list)
+                        A0
+
+       void ZCon_HeaderToIBM(struct List *);
+
+   FUNCTION
+       Diese Funktion wandelt alle ISO-8859-1-Umlaute eines ZConnect-
+       Headers in IBM-Umlaute um.
+
+   INPUTS
+       list - Zeiger auf die List-Struktur des umzuwandelnden ZConnect-
+       Headers
+
+   SEE ALSO
+       ZCon_HeaderToISO(), ZCon_StringToIBM()
+zconnect.library/ZCon_HeaderToISO           zconnect.library/ZCon_HeaderToISO
+
+   NAME
+       ZCon_HeaderToISO -- Wandelt Header in ISO-8859-1-Umlaute.
+
+   SYNOPSIS
+       ZCon_HeaderToISO(list)
+                        A0
+
+       void ZCon_HeaderToISO(struct List *);
+
+   FUNCTION
+       Diese Funktion wandelt alle IBM-Umlaute eines ZConnect-Headers in
+       ISO-8859-1-Umlaute um.
+
+   INPUTS
+       list - Zeiger auf die List-Struktur des umzuwandelnden ZConnect-
+              Headers
+
+   SEE ALSO
+       ZCon_HeaderToIBM(), ZCon_StringToISO()
+zconnect.library/ZCon_NewCreateID           zconnect.library/ZCon_NewCreateID
+
+   NAME
+       ZCon_NewCreateID -- Erzeugt einzigartige ID. (V3)
+
+   SYNOPSIS
+       success = ZCon_NewCreateID(string, buffer)
+       D0                         A1      A2
+
+       BOOL ZCon_NewCreateID(STRPTR, STRPTR);
+
+   IMPORTANT NOTE
+       Ab V4 muß der Puffer mindestens 33 Byte groß sein (s. BUGS)!
+
+   FUNCTION
+       Diese Funktion erzeugt eine einzigartige ID, die z.B. als Message-ID
+       für ZConnect-Nachrichten verwandt werden kann.
+
+   INPUTS
+       string  - Ein beliebiger String, der zur Erzeugung der ID herange-
+                 zogen wird. Hier kann z.B. die Adresse des Absenders über-
+                 geben werden.
+       buffer  - Zeiger auf einen Puffer, der die erzeugte ID aufnehmen soll
+                 (muß mind. 33 Byte groß sein!). Die ID wird mit einem 0-
+                 Byte abgeschlossen.
+
+   RESULT
+       success - TRUE, wenn die ID erfolgreich erzeugt werden konnte, sonst
+                 FALSE (kein temporärer Speicher verfügbar)
+
+   EXAMPLE
+       UBYTE  id[33];
+       STRPTR abs;
+
+       abs = "BLiZZeR@dame.de";
+       ZCon_AppendHeaderLine("ABS", abs);
+
+       if (ZCon_NewCreateID(abs, id))
+         ZCon_AppendHeaderLine("MID", id);
+
+   NOTES
+       Die ID wird mittels des RSA Data Security, Inc., MD5 Message-Digest
+       Algorithm erzeugt, dessen Ergebnis von der aktuellen Systemzeit, dem
+       übergebenen String sowie dem Rückgabewert der Funktion GetUniqueID()
+       der utility.library abhängig ist.
+
+       Die Wahrscheinlichkeit, daß jemals die gleiche ID erzeugt wird, ist
+       daher nahezu 0.
+
+   BUGS
+       V3 erzeugte einen defekten Pufferinhalt. Dies ist in V4 behoben.
+       Workaround: Explizit V4 öffnen.
+
+   SEE ALSO
+       ZCon_CreateID()
+zconnect.library/ZCon_QP2ASCII                 zconnect.library/ZCon_QP2ASCII
+
+   NAME
+       ZCon_QP2ASCII -- Konvertiert Quoted-Printable zu ASCII. (V5)
+
+   SYNOPSIS
+       count = ZCon_QP2ASCII(source, dest)
+       D0                    A1      A2
+
+       ULONG ZCon_QP2ASCII(STRPTR, STRPTR);
+
+   FUNCTION
+       Diese Funktion konvertiert alle Quoted-Printable-Zeichen (z.B. "=DF"
+       für "ß" usw.) in einem String in Normalzeichen.
+
+   INPUTS
+       source - Zeiger auf einen String, der evtl. Quoted-Printable-Zeichen
+                enthält
+       dest   - Zeiger auf den Zielpuffer, der den konvertierten String auf-
+                nehmen soll. Die Größe muß mind. der von source entsprechen
+                (inkl. 0-Byte)!
+
+   RESULT
+       count  - Anzahl der Zeichen, die dest nach der Konvertierung tatsäch-
+                lich enthält (nützlich bei "=00", was ja einem 0-Byte ent-
+                spricht. strlen() wäre dann nämlich nutzlos.)
+
+   EXAMPLE
+       UBYTE source[100] = "=E4=F6=FC=C4=D6=DC=DF";
+       UBYTE dest[100];
+       ULONG len;
+
+       len = ZCon_QP2ASCII(source, dest);
+
+       /* Ausgabe: "äöüÄÖÜß (7)" */
+       printf("%s (%lu)\n", dest, len);
+
+   NOTES
+       Der konvertierte String wird mit einem 0-Byte abgeschlossen.
+
+       Es werden nur die Quoted-Printable-Zeichen von "=00" bis "=FF"
+       konvertiert.
+
+       Die Zeichen müssen als Großbuchstaben vorliegen! Zum Beispiel wird
+       "=DF" zu "ß" konvertiert, "=df" bleibt aber "=df".
+
+   SEE ALSO
+       ZCon_ASCII2QP()
+zconnect.library/ZCon_RemHeaderLines     zconnect.library/ZCon_RemHeaderLines
+
+   NAME
+       ZCon_RemHeaderLines -- Entfernt Headerzeilen aus einem Header. (V2)
+
+   SYNOPSIS
+       ZCon_RemHeaderLines(list, id, all)
+                           A0    A1  D0
+
+       void ZCon_RemHeaderLines(struct List *, STRPTR, BOOL);
+
+   FUNCTION
+       Diese Funktion entfernt alle Headerzeilen eines ZConnect-Headers,
+       deren Kennung gleich der übergebenen Kennung ist.
+
+   INPUTS
+       list - Zeiger auf die List-Struktur des zu bearbeitenden ZConnect-
+              Headers
+       id   - Kennung der Headerzeilen *ohne* ":", die entfernt werden
+              sollen (z.B. "O-ROT")
+       all  - TRUE, wenn alle Headerzeilen mit der richtigen Kennung ent-
+              fernt werden sollen, sonst FALSE (hier wird nach Entfernen der
+              ersten richtigen Headerzeile abgebrochen)
+
+   EXAMPLE
+       /* alle Headerzeilen, deren Kennung "EB" ist, entfernen */
+       ZCon_RemHeaderLines(header, "EB", TRUE);
+
+   NOTES
+       Es wird nicht zwischen Groß- und Kleinschreibung unterschieden.
+
+   SEE ALSO
+       ZCon_AppendHeaderLine()
+zconnect.library/ZCon_RenameHeaderLinesconnect.library/ZCon_RenameHeaderLines
+
+   NAME
+       ZCon_RenameHeaderLines -- Benennt Headerzeilenkennungen um. (V2)
+
+   SYNOPSIS
+       ZCon_RenameHeaderLines(list, id, newid, all)
+                              A0    A1  A2     D0
+
+       void ZCon_RenameHeaderLines(struct List *, STRPTR, STRPTR, BOOL);
+
+   FUNCTION
+       Diese Funktion benennt alle Headerzeilenkennungen eines ZConnect-
+       Headers in eine andere Kennung um.
+
+   INPUTS
+       list  - Zeiger auf die List-Struktur des zu bearbeitenden ZConnect-
+               Headers
+       id    - Kennung der zu suchenden Headerzeilen *ohne* ":" (z.B. "ROT")
+       newid - neue Kennung *ohne* ":" (z.B. "O-ROT")
+       all   - TRUE, wenn alle Headerzeilen mit der richtigen Kennung umbe-
+               nannt werden sollen, sonst FALSE (hier wird nach Umbenennen
+               der ersten richtigen Headerzeile abgebrochen)
+
+   EXAMPLE
+       ZCon_RenameHeaderLines(header, "EMP", "OEM", FALSE);
+
+   NOTES
+       Es wird nicht zwischen Groß- und Kleinschreibung unterschieden.
+zconnect.library/ZCon_StringToIBM           zconnect.library/ZCon_StringToIBM
+
+   NAME
+       ZCon_StringToIBM -- Wandelt String in IBM-Umlaute.
+
+   SYNOPSIS
+       ZCon_StringToIBM(string)
+                        A1
+
+       void ZCon_StringToIBM(STRPTR);
+
+   FUNCTION
+       Diese Funktion wandelt alle ISO-8859-1-Umlaute eines String IBM-
+       Umlaute um.
+
+   INPUTS
+       string - Zeiger auf den umzuwandelnden String
+
+   SEE ALSO
+       ZCon_StringToISO(), ZCon_HeaderToIBM()
+zconnect.library/ZCon_StringToISO           zconnect.library/ZCon_StringToISO
+
+   NAME
+       ZCon_StringToISO -- Wandelt String in ISO-8859-1-Umlaute.
+
+   SYNOPSIS
+       ZCon_StringToISO(string)
+                        A1
+
+       void ZCon_StringToISO(STRPTR);
+
+   FUNCTION
+       Diese Funktion wandelt alle IBM-Umlaute eines Strings in ISO-8859-1-
+       Umlaute um.
+
+   INPUTS
+       string - Zeiger auf den umzuwandelnden String
+
+   SEE ALSO
+       ZCon_StringToIBM(), ZCon_HeaderToISO()
+zconnect.library/ZCon_WriteHeader           zconnect.library/ZCon_WriteHeader
+
+   NAME
+       ZCon_WriteHeader -- Schreibt ZConnect-Header in Datei.
+
+   SYNOPSIS
+       ZCon_WriteHeader(list, filehandle)
+                        A0    A1
+
+       void ZCon_WriteHeader(struct List *, BPTR);
+
+   FUNCTION
+       Diese Funktion schreibt einen kompletten ZConnect-Header in eine
+       Datei.
+
+   INPUTS
+       list       - Zeiger auf die List-Struktur des zu schreibenden
+                    ZConnect-Headers
+       filehandle - Zeiger auf das FileHandler der Datei
+
+   NOTES
+       Die Headerzeilen werden in folgendem Format in die Datei
+       geschrieben:
+
+         <Kennung>:<TAB><Inhalt><CR><LF>
+
+       Die Elemente zhl_ID und zhl_Contents werden unverändert in die Datei
+       geschrieben.
+
+       Hinter dem Header wird keine Leerzeile (CR/LF) ausgegeben, die den
+       Header vom Body/Kommentar trennt.
+
+       Die Ausgabe in die Datei geschieht mittels FWrite(), es ist also
+       darauf zu achten, nur gepufferte Ein-/Ausgabe zu benutzen.
+
+   SEE ALSO
+       ZCon_HeaderToIBM(), ZCon_HeaderToISO(), dos.library/FWrite()
+

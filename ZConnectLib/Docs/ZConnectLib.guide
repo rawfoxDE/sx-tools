@@ -1,0 +1,194 @@
+@database ZConnectLib.guide
+@smartwrap
+@$VER: ZConnectLib.guide 1.5 (15.2.98) © by Maik "BLiZZeR" Schreiber
+
+@node "Main" "zconnect.library 5.0"
+@{jcenter}@{par}
+@{b}@{u}zconnect.library 5.0 - Copyright © 15-Feb-1998 by Maik Schreiber@{uu}@{ub}@{par}
+
+
+@{" License          " link "License.txt/Main"}@{par}
+
+@{" Introduction     " link "Introduction"}@{par}
+@{" Usage            " link "Usage"}@{par}
+
+@{" History          " link "History" 9999}@{par}
+
+@{" Author           " link "Author"}@{par}
+@{" Acknowledgements " link "Acknowledgements"}@{par}
+
+
+Note: This document makes heavy use of OS 3.1 @{amigaguide} features.@{par}
+
+@endnode
+
+@node "Introduction" "Introduction"
+@{par}
+  @{b}@{u}Introduction@{uu} @{ub}@{par}
+
+zconnect.library is a shared library for easy processing of headers of so
+called ZConnect message buffers. It also offers several support functions,
+such as functions for creating date strings or message IDs.@{par}
+
+For those who don't know what ZConnect is: ZConnect is a format like the one
+specified in RFC 822 ("Standard for the format of ARPA internet text
+messages") - but simply another ;)@{par}
+
+Please note that the definitions of ZConnect are currently only German,
+that's why the documentation of zconnect.library is German, too.@{par}
+
+See the @{"zconnect.library autodocs" link "/Developer/Autodocs/zconnect.doc/Main"} for more details.@{par}
+
+@endnode
+@node "Usage" "Usage"
+@{par}
+  @{b}@{u}Usage@{uu} @{ub}@{par}
+
+Until version 2.0 of the library, the maximum line length of a ZConnect
+header line must not exceed 32768 byte. This has been changed in version
+3.0. The default maximum line length is now 8192 byte. This is also
+the absolute minimum line length.@{par}
+
+Since version 3.0, you can specify the global environment variable
+ZConnectLib/MaxLineLen to set the maximum line length to your needs. I
+personally prefer the value 32768.@{par}
+
+To set the ZConnectLib/MaxLineLen variable to 32768, you would use the
+following Shell command:@{par}
+
+  @{lindent 9}SetEnv ZConnectLib/MaxLineLen 32768@{lindent 0}@{par}
+
+You should then copy the ENV:ZConnectLib/ directory to your ENVARC:
+directory. This way you don't have to modify your s:User-Startup
+(or s:Startup-Sequence, which you shouldn't modify anyway).@{par}
+
+@endnode
+
+@node "History" "History"
+@{par}
+  @{b}@{u}History@{uu} @{ub}@{par}
+
+1.0, 04-Apr-1997:@{par}
+@{lindent 4}  - first version of zconnect.library@{lindent 0}@{par}
+
+2.0, 10-Jun-1997:@{par}
+@{lindent 4}  - implemented ZCon_CreateDate(), ZCon_GetDate(),
+ZCon_CreateID(), ZCon_RemHeaderLines() and ZCon_RenameHeaderLines()@{lindent 0}@{par}
+@{lindent 4}  - more checks built into ZCon_CheckHeader()@{lindent 0}@{par}
+@{lindent 4}  - fixed a small bug in ZCon_AppendHeaderLine()@{lindent 0}@{par}
+@{lindent 4}  - fixed <proto/zconnect.h>@{lindent 0}@{par}
+
+3.0, 23-Jun-1997:@{par}
+@{lindent 4}  - Locale support implemented: ZCon_GetZConStr()@{lindent 0}@{par}
+@{lindent 4}  - implemented ZCon_NewCreateID(), ZCon_CreateHeader() and
+ZCon_CheckRoute()@{lindent 0}@{par}
+@{lindent 4}  - added @{"special note on usage" link "Usage"}@{lindent 0}@{par}
+
+4.0, 25-Jul-1997:@{par}
+@{lindent 4}  - removed *serious* bug in ZCon_NewCreateID()@{par}
+@{fg highlight}You must read the autodocs to stay compatible!@{fg text}@{lindent 0}@{par}
+@{lindent 4}  - removed $VER: bug in German catalog which prevented zconnect.library
+from opening it (it took me *days* to find that one!)@{lindent 0}@{par}
+
+5.0, 15-Feb-1998:@{par}
+@{lindent 4}  - removed bug in LVO table of the library (see "BUGS" section of
+ZCon_CheckRoute())@{lindent 0}@{par}
+@{lindent 4}  - implemented ZCon_QP2ASCII() and ZCon_ASCII2QP()@{lindent 0}@{par}
+
+@endnode
+
+@node "Author" "Author"
+@{par}
+  @{b}@{u}Author@{uu} @{ub}@{par}
+
+@{lindent 11}@{b}SnailMail: @{ub}Maik Schreiber@{par}
+Korallusstraﬂe 3b@{par}
+21109 Hamburg@{par}
+FR Germany@{lindent 0}@{par}
+
+@{code}@{b}EMail    : @{ub}BLiZZeR@dame.de@{body}@{par}
+
+@{lindent 11}@{b}Phone    : @{ub}+49-(0)40-75492525 (4:00pm - 9:00pm MET/MEST)@{lindent 0}@{par}
+
+@{code}@{b}Homepage : @{ub}http://home.pages.de/~bZ@{body}@{par}
+
+@{lindent 11}@{b}Account  : @{ub}Account: 214 09 11  (Maik Schreiber)@{par}
+BLZ    : 130 700 00 (Deutsche Bank)@{lindent 0}@{par}
+
+@{b}PGP key  : @{ub}@{par}
+
+@{code}Type Bits/KeyID    Date       User ID
+pub  2048/B71E1741 1996/06/17 Maik Schreiber <BLiZZeR@dame.de>
+sig       7DE5E039             Oliver Hauth <phomexa@vnet.e.ruhr.de>
+sig       34D74DC1             Peter Simons <simons@petium.rhein.de>
+sig       5C77B04D             Johnny Tevessen <j.tevessen@line.org>
+sig       84539E45             Oliver Hauth <phomexa@forall.dame.de>
+sig       B71E1741             Maik Schreiber <BLiZZeR@dame.de>
+                              Maik Schreiber <http://home.pages.de/~bZ>
+sig       34D74DC1             Peter Simons <simons@petium.rhein.de>
+sig       5C77B04D             Johnny Tevessen <j.tevessen@line.org>
+sig       B71E1741             Maik Schreiber <BLiZZeR@dame.de>
+
+-----BEGIN PGP PUBLIC KEY BLOCK-----
+Version: 2.6.3ia
+Comment: visit http://home.pages.de/~bZ
+
+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
+=AjWX
+-----END PGP PUBLIC KEY BLOCK-----@{body}@{par}
+
+@endnode
+@node "Acknowledgements" "Acknowledgements"
+@{par}
+  @{b}@{u}Acknowledgements@{uu} @{ub}@{par}
+
+I would like to thank the following people:@{par}
+
+@{b}Matthias "Quape" Kaulartz @{ub}@{par}
+
+@{b}Oliver "Phomex A" Hauth @{ub}@{par}
+
+@{b}All who I did forget... :) @{ub}@{par}
+
+@endnode
+
