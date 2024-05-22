@@ -1,0 +1,30 @@
+[34m.---------------------------------------------.------[1m [22m{[1m[43m SX_MSG - Help [22m[40m}[1m [22m------.
+|  [31m?[32m/[31m??[37m..[36mview a small [33mHelp[36mMenu[32m/[36mshow this page [34m|                               |
+|>-------------------------------------------<|                               |
+|     [31mE[37m..[33mEnter [36ma Msg in normal way            [34m|                               |
+|>--------------------------------------------`------------------------------>|
+| [31mR num[37m..[33mRead [36ma Msg [33mwith [36mgiven [33mnumber[36m. Only the Msgs in the current MsgBase   [34m|
+|         [36mcan be visited. Its not needed to give an argument                  [34m|
+|>---------------------------------------------------------------------------<|
+| [31mL num[37m..[33mList [36mthe Msgs. If no numerical argument is given, the list will be   [34m|
+|         [36mreaded from Msg #1-EOF, else the Msgs will listed from Nr. to EOF   [34m|
+|>---------------------------------------------------------------------------<|
+|     [31m#[37m..[33mList [36mlast Msgs. Your ScreenLength ( Usersettings) is relevant here.  [34m|
+|>---------------------------------------------------------------------------<|
+|     [31mI[37m..[33mIndex [36mof the MsgBases in the current Conference                      [34m|
+|         [36mConferencename, actual Date/Time and last Login are on the top.     [34m|
+|         [36mThe Bases list shows MsgBase number, total Msgs and global New ones [34m|
+|        [37mEnter a number at the Command Prompt let you join the Base with Nr.  [34m|
+|>---------------------------------------------------------------------------<|
+|     [31mS[37m..[33mScan [36mfor new mails. [33mUppercase [36mCommand [33m! [36mIf Newmail is found, a small [34m|
+|         [36mCommandprompt let you choose: quit scan, read new mail, do nothing  [34m|
+|>---------------------------------------------------------------------------<|
+|     [31ms[37m..[33mscan [36mfor unreaded mails. [33mLowercase [36mCommand [33m! [36mConfused [33m? [36mIts good to  [34m|
+|         [36mknow, that SX has two Pointers for Mail: 1 for Mailscan and         [34m|
+|         [36m1 for unreaded Mails. If you like to reset all unreaded Msgs,       [34m|
+|         [36myou may enter `[33mso[36m` or `[33ms o[36m`.                                        [34m|
+|>---------------------------------------------------------------------------<|
+|   [31m+[32m/[31m-[37m..[33mup[32m/[33mdown [36ma MsgBase. You get notice if there is`nt any more MsgBase    [34m|
+|>----------------------------------------------------------------------------'
+|    [35mSX_MSG v1.¹¾ bY [37m[r]FoX^aMIcHURCh
+[34m`-----------------------------··  · ··

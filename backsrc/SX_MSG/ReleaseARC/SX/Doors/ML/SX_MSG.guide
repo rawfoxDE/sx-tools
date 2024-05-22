@@ -1,0 +1,455 @@
+@database 67acfcc0-0
+@master AmiX:SX/Developer/SX_MSG/doc/SX_MSG.guide
+@$VER: 1.0
+@remark Created with Heddley v1.1 (c) Edd Dumbill 1994
+
+@node "Main" "No title"
+
+    @{b}@{u}wELCOME tO SX_MSG 1.2 wRITTEn bY [r]FoX@{ub}@{uu} 
+              
+             fOR sYSTEM\X bY zED
+          
+        @{b}dA dOCu                dA pICs@{ub}
+        -------                -------
+
+    @{b}@{"-[  iNTROdz  ]-" link "intro" 0}       @{"-[ mAINmENUpIC ]-" system "multiview ml-main.gif"}  
+    @{"-[  iNZTALL  ]-" link "install" 0}       @{"-[ hELPmENUpIC ]-" system "multiview ml-help.gif"}
+    @{"-[   uSAGE   ]-" link "usage" 0}       @{"-[ mAILsCANpIC ]-" system "multiview ml-ms0.gif"}
+    @{"-[  fEATURe  ]-" link "features" 0}       @{"-[ mAILiDEXpIC ]-" system "multiview ml-ms1.gif"}
+    @{"-[   pLANs   ]-" link "plans" 0}       @{"-[ nEWmAIL pIC ]-" system "multiview ml-ms_found.gif"} 
+    @{"-[  cONTAcT  ]-" link "contact" 0}       @{"-[ iNFOpAGEpIC ]-" system "multiview ml-info.gif"} 
+    @{"-[    S\X    ]-" link "sx" 0}       @{"-[ mSGtOPICpIC ]-" system "multiview ml-msg_list.gif"}
+    @{"-[  gREETZz  ]-" link "greetz" 0}       @{"-[ lISTbYnRpIC ]-" system "multiview ml-list_nr.gif"}
+
+    A Messages Indexer for the only usage 
+          with the XIM-port of the 
+      System-X Bulletin Board Software
+@endnode
+
+@node "intro" "intro"
+ 
+ @{b}Welcome to the MessageLister !@{ub}
+ ------------------------------
+
+ SX_MSG V1.2 is an XIM-Door for the usage with the @{"SystemX" link "sx" 0} BBS software
+ only and cannot be used under other BBS programms.
+ The MessageLister is nice to use with upcoming Fido software or other
+ Netwares for @{"SystemX" link "sx" 0}.
+
+ This Door is a basic instrument, to give overview to the MsgBases.
+ It shows the existing MsgBases in a conference, total Msgs,
+ new ones and a lot more...
+
+
+ @{"<" link "Main" 0}  @{">" link "install" 0}  @{"Main" link "Main" 0}
+@endnode
+
+@node "install" "install"
+
+ @{b}Installation:@{ub}
+ -------------
+
+ The MessageLister gives you a powerfull handling for the MessageBases
+ of SystemX. The Door is so advanced in its handling, that i use the
+ other Message Commands  like `E` or `R` to it, too.
+ You may give any Commandname you like. `ML` as Commandname runs fine
+ here, inculding the fingerdynamics ;)
+
+ Now do it :
+
+ - Copy all archive contents to SX:Doors/ML/ or any Directory you like.
+
+ - configure the Door call
+
+   + by @{"MCI-File" link "inst_MCI" 0}    
+   + as @{"XIM Door" link "inst_XIM" 0} 
+   + as @{"MailScan" link "inst_MS" 0}   
+ 
+ - Restart SystemX, so the new settings will be activated
+
+ Thats all.
+ Now Login and call the Door in your selected way.
+ While startup the Door shows you an Index about the installed MessageBases
+ in the current Conference and a CommandPrompt were you may enter yer 
+ actions.
+ Check one of the scan-functions to see, if all Conferences/MessageBases
+ are scanned for you. if not, so check your Conference Access.
+
+
+ @{"<" link "intro" 0}  @{">" link "usage" 0}  @{"Main" link "Main" 0}
+@endnode
+
+@node "usage" "usage"
+ 
+ @{b}How to use that shit ?@{ub}
+ ----------------------
+
+ After calling the MessageLister, first an ansi-header comes up 
+ (@{i}if the sysop @{ui}@{"calls the Door by MCI-File" link "inst_MCI" 0}) or the Door starts
+ direcly with an overview of the installed MsgBases in the
+ actual conference, you are.
+
+ ex:                
+                  +- current Conference Name
+                  |             +- current Date/Time            Last Call
+                  |             |           |                      |
+                  |             |           |                      |
+ MessageBases in New User    05-18-98 | 14:30:52 LastCall: 05-18-98 14:30:34
+ ---------------------------------------------------------------------------
+ (  1) - New Users Chat   [ 278/ 8] |---------------------------------------
+ ---|-----|------------------|---|---
+    |     |                  |   |
+    |     |                  |   +- Number of New Msgs
+    |     |                  +- Number of total Msgs in this Base
+    |     +- Name of the MsgBase    
+    +- Number of the MsgBase in current Conference
+
+ 
+ TitleBar Informations : - current Conference Name
+                         - current Date
+                         - current Time
+                         - Last Call Date/Time
+
+          MsgBase List : - Number of MsgBase
+                         - Name of MsgBase
+                         - Total Msgs in Base
+                         - Total New Msgs in Base
+
+ After that a Commandprompt comes up and you are able to use the following
+ commands:
+
+ ex:
+
+ @{b}MsgLister Commands: ?,CR,E,R,L,I,S,s,+,-,#,(@{i}New Users Chat@{ui}) :@{ub} 
+
+ The name of the current MsgBase, you browse in, is shown in the parentieses
+ on the Commandprompt were you enter the Commands you like to do.
+ The CommandPrompt also accepts digits for the selected  
+ MsgBase you like to join. (see `I`-command) 
+
+ The commands are :
+ 
+ @{b}?@{ub}   - View the Helpmenu
+       This shows a small menuansi, explaining, what the commands are
+       doing.
+
+ @{b}??@{ub}  - View an additional Helppage, with more explaination to the commands.
+
+ @{b}CR@{ub}  - Press Return and the MsgLister will quit. The Door will quit, if
+       you enter any unknown command.
+
+ @{b}E@{ub}   - Enter a Msg
+       Here you join Enter Msg by SystemX. You have to put the Reciver
+       and the subject into a normal way. Just enter a Msgs ...
+
+ @{b}R@{ub}   - Read a Msg <Argumment>
+       You may give an Digit Argument here for the Msg you like to read.
+       For that, you write the Msgnumber you wich, like `r 13` or `r32` 
+
+ @{b}L@{ub}   - List Msgs <Argument>
+       This will list all Msgs Headers in the current MsgBase.
+       If a Digit Argument is given to the `L` command, the Messages are
+       listed from the MsgNumber <Argument> to Listend. If no MsgNumber is
+       given, the list starts at Msg #1.
+
+       The List will inform you about
+                                      - Name of MsgBase
+                                      - total Msgs in MsgBase
+                                      - Msg number
+                                      - Date/Time of Msg edit
+                                      - Name of writer
+                                      - Name of receiver
+                                      - Replaymarker
+                                      - New Marker
+                                      - Msg Subject
+                                      - `PRIVATE MSG` Flag
+                                      - `DELETED` Flag
+
+ @{b}I@{ub}   - Index of MsgBases in the actual Conference.
+       This will show you the same, as you see at startup the Door.
+       If you enter a Number at the CommandPrompt, you automatic join
+       the selected MsgBase(Nr.) and see the list of last Msgs in the
+       new joined MsgBase.
+
+ @{b}S@{ub}   - Scan for new Msgs. This Mailscan searches for new Msgs for you
+       and let you choose btw. READ, QUIT, IGNORE the new mail.
+       The Mailscan also accepts Msgs to `all` and `eall`. 
+       After that, you return the CommandPrompt.
+       
+    @{b}@{i}! If you call the Door with additional Argument `s`, so only !
+    ! Mailscan will be executed. Ex:`ml s`.  @{ub}@{ui}see @{"Calling SX_MSG" link "install" 0}
+
+ s   - scan for unreaded Msgs <Argument>  (see L.R.P)
+       A short Index of unreaded Msgs will shown here in the form of
+       the Mailscan. Unreaded Msgs including @{b}all@{ub}" link "inst_MS" 0}. Unreaded
+       Msgs including all unreaded Msgs.
+       If you give the `s` Command an Argument `o`, all unreaded Msgs
+       will reset to OLD (read already)
+
+ @{b}+/-@{ub} - browse to next/previous MsgBase in this Conference
+
+ @{b}#@{ub}   - List the last Msgs only
+       How many lines are listed, is given by the usersettings ScreenLegth.
+       Only the last Messages will be listed as Header List as same as
+       the `L` command does
+
+
+ @{"<" link "install" 0}  @{">" link "features" 0}  @{"Main" link "Main" 0}
+@endnode
+
+@node "features" "features"
+       
+@{b} history/features:@{ub}
+ -----------------
+         
+ SX_MSG V1.2:
+         
+   10.2.98
+          - activ prompt, show current msgbase name
+          - msgbase selection with num. input direct at the prompt
+            then readtopic->user.screenlenght->listend only
+          - msgread selection with argument `r 12` or `r12` 
+            here join Msg Options of sx
+          - complete msgs indexlist or only the last ones will shown
+            number,date,time,from,to,reply,subject
+          - ascii found and colored :) now MCI-file does 
+            clearscreen at beginning (optional), then logo, then door
+            or what ever you want
+          - some bugs fixed
+          - double listing the MessageBases
+            titelbarinfo: current conference name, current time/date, last l
+                          max msgs/new msgs in current base
+   25.3.98
+          - bugfix - handles 256 MessageBases with maximal
+            10.000 Messages/MessageBase...enought or better 100k ?
+          - reply marker - shows, if the Message is answered  
+            if a msg is replyed more then 1 time, its a double reply marker
+          - new nice looking helpmenu added
+          - private-flag added  :   + if msg is private subject=`PRIVATE`
+                                    + private msg subject visible for 
+                                      writer and reciver
+          - delete-flag added   :   + deleted msgs have `DELETED` in subject
+   3.4.98
+          - changed gfx-output a bit
+          - cut the timestring to 5 chars, swap time and date output
+          - move the actualbase(baseindex) function to trash.
+            found XIMFunction(507,0,0) JH_MCI :) for current msgbase
+            at the prompt
+          - bugfix - change the current LRP
+          - new msgs are shown now ! flagged in baseindex and subjectlist an
+            how many of them.
+          - bugfix - cut the messagebasename to 12 chars, coz output trouble
+          - optimised the code, i.e. done an argumentparsing for SX_Function
+          - tuned the gfx a bit
+          - added a small and raw info
+   22.5.98
+          - added a Mailscan what shows unreaded and new mails
+            Mailscan let you choose between read the new msg, do not read or
+            quit mailscan. If you like to read your new mail, Mailscan joins
+            the msg automatic, acceps `eall`,`all` and `username` to be acti
+          - call the door with argument `s` for mailscan only !
+          - added an argument for `s` (scan for unreaded msgs, named `o` to
+            switch all msgs in all msgbases to OLD. 
+          - added an argument for `L` (Listview) were you can give a msgnumb
+            from what you like to view the list
+   28.5.98
+          - Mail/Msgscan has now a conference user access level check 
+            If the User has no access to any conference, the mailscan
+            breaks
+          - an Informationpage was added with more detailed explaination abo
+            the commands        
+   30.5.98
+          - if Users Screenlength <= 27 lines, the informationpage switched
+            to a second part
+          - optimised the source, killed lamershit. source: 54k including al
+            Ansis
+    1.6.98
+          - make the conference axx check more advanced. checks now all confs
+            for axx, does not break after noaxx anymore. 
+            Ex: Confaxx:  XXX_XX_X
+          - do some more small internal fixes, opts, gfx, funcs, ...
+            only penouts
+    3.6.98
+          - bugfix - after Mailscan found new mail, the CommandPrompt
+            is ok now. fixed some penouts, too
+          - finish this Guide
+
+ @{"<" link "usage" 0}  @{">" link "plans" 0}  @{"Main" link "Main" 0}
+@endnode
+
+@node "plans" "plans"
+
+ @{b}Future Plans:@{ub}
+ -------------
+
+ go to the net :)
+ check out the fido transfer, build a router, a sorter, a spooler with
+ inbound/ and outbound/ in Mail:
+ Implement this into SystemX together with Zed. Results of such things 
+ can earliest be viewed in a year, coz there are a lot of other projects
+ we are on, so please have patient :)
+
+ next todo:
+               
+          - delete msg by nr. from subjectlist (SXFunction?) 
+          - if a msg is replayed, add `re:` to the subject WHILE REPLAYING
+            need implementaion in sx, too, or i do it in the ML
+          - more optimisatione grande par code
+          - better gfx/infos
+          - begin some tests for networking ;)
+                    
+    
+ @{"<" link "features" 0}  @{">" link "" 0}  @{"Main" link "Main" 0}
+      
+       
+      
+   
+
+@endnode
+
+@node "contact" "contact"
+
+ @{b}Contact:@{ub}
+ --------
+
+ All your Suggestions, Hints and comments are welcome.
+ Bugreports are importand for me to know, so i can fix anywhat.
+ 
+ There are serveral way`s to connect me : 
+
+ My BBS:
+ -------
+ +49(0)451/55220      Node #1 with 288oo v.FC
+
+ Internet:
+ ---------
+
+  EMail : house_bbs@hotmail.com
+                 fox@dame.de
+ Telnet : 22.00-0.00 GMT daily at   house.dyn.ml.org   Port 23
+    WWW : http://amichurch.home.ml.org
+
+ Feel free to write me. 
+
+
+ @{"<" link "plans" 0}  @{">" link "sx" 0}  @{"Main" link "Main" 0}
+@endnode
+
+@node "sx" "sx"
+
+ @{b}SystemX Bulletin Board System@{ub}
+ -----------------------------
+
+ SystemX is a new Bulletin Board System in the Style of AmiExpress.
+ It is available in a Conference based Version and in a Menu based
+ Version.
+ Its Doorsupport is great, coz many Types of standart Doors are alowed
+ and some special ones, too.
+ The Maincode is hacked by Zed in pur SASC. Connects to the Autor of
+ SystemX may goto zed@mentasm.com or visit the SystemX Support Page
+ at http://sx.denet.co.jp .
+
+ 
+ @{"<" link "contact" 0}  @{">" link "greetz" 0}  @{"Main" link "Main" 0}
+@endnode
+
+@node "greetz" "greetz"
+
+ @{b}gREETz:@{ub}
+ -------
+
+ Greetings un unordered form:
+
+ Get_Merry, Thaler, Obligator, Wolfman, Phantom, Jungle, Sal-One, Wizzler,
+ Woober, Ramonster, Stark, Case, Zed, Trantor, Kunglao, Digiman, Gandalf,
+ DC`98, Rasta, Test, Shadow, Merlin, Badgirl, Raped, Prodigenator, Crusader,
+ Wolfman, Jedi, Belzebuth, R19, Ubit, Shadow, GetMerry, ShenDC, SigmaSeven
+ and many many more ...
+
+ @{"<" link "sx" 0}  @{">" link "Main" 0}  @{"Main" link "Main" 0}
+@endnode
+
+@node "inst_MCI" "inst_MCI"
+
+ @{b}Call ML by MCI-File:@{ub}
+ --------------------
+ 
+ If you call the MessageLister by an MCI_File, you may handle the startup
+ in serveral ways. How to use MCI-Files you can read in the SX-Guide
+
+ - open SXConfig -> Menus/Commands -> Main_Menu
+ - add a new Command:
+
+   Command :  ML                               /* the Command Name       */
+   ExtraNr.:   0                               /* no Extra Number needet */
+   LowAxx  :  10                               /* Low Axx for the ML     */ 
+   HighAxx : 255                               /* High Axx for the ML    */
+   Func.ID :  12                               /* show Ansi              */
+   Door/String/File : SX:doors/ml/sx_msg.ans   /* path to the ML-Header  */
+
+ - check the Part in the @{b}SX_MSG.ans@{ub} (AnsiHeader), were the Door is
+   called like `@{b}~SX_doors/ml/sx_msg.ans@{ub}`, if its correct for you.
+
+ Do not kill the `[2J` for clear Screen at the top of the file 
+ while editing with any AnsiEd !
+ You may edit the HeaderFile like your whishes, a complete MCI-Command
+ Reference for SystemX ca be found in the SX-Guide.
+
+ Send me your own MessageLister Headeransi, i will spread it with the 
+ next update !!
+
+ @{"<" link "install" 0}  @{">" link "inst_XIM" 0}  @{"Main" link "Main" 0}
+@endnode
+
+@node "inst_XIM" "inst_XIM"
+
+ @{b}Call ML as XIM:@{ub}
+ ---------------
+
+ If you call the MessageLister direct as XIM-Door, it will start
+ without any preactions with the Index of the MessageBases in the
+ current Conference.
+
+ - call SXConfig -> Menus/Commands -> Main_Menu
+ - add a new Command:
+
+   Command :  ML                                  /* Command Name       */
+   ExtraNr.:   0                                  /* no ExtraNr. needed */
+   LowAxx  :  10                                  /* LowAxx for the ML  */
+   Highxx  : 255                                  /* HighAxx for the ML */
+   Func.ID : 120                                  /* XIM-Door !         */
+   Door/String/File :  sx:doors/ml/SX_MSG         /* the path to ML     */
+
+ - Restart SystemX to activate the new Command.
+
+ Now logon and check, if all went fine :)
+
+ 
+ @{"<" link "install" 0}  @{">" link "inst_MS" 0}  @{"Main" link "Main" 0}
+@endnode
+
+@node "inst_MS" "inst_MS"
+
+ @{b}Call ML as MailScan:@{ub}
+ --------------------
+
+ If you Login to yer SystemX, the MessageLister has a nice Feature 
+ to scan for new Msgs.
+ If you call the MessageLister with an Argument `@{b}@{i}s@{ub}@{ui}`, only the 
+ MailScan function of the MessageLister will work.
+
+ Example: `@{b}@{i}ml s@{ub}@{ui}`
+
+ The MailScan found new Msgs for you, for `eall` and for `all`.
+ If the MailScan found such Msg, you can select between
+ 
+ -    Q ...... Quit/Abort the Mailscan
+ -    N ...... No reading, but proceed scanning
+ - CR/Y ...... Read the new Msgs
+
+ This Function is beta for now. Updates can be found on the 
+ Amichurch Support-Page.
+
+ @{"<" link "install" 0}  @{">" link "usage" 0}  @{"Main" link "Main" 0}
+@endnode
+

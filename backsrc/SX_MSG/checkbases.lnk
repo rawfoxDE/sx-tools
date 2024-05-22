@@ -1,0 +1,4 @@
+FROM LIB:c.o "checkbases.o"
+TO "checkbases"
+LIB LIB:sc.lib LIB:amiga.lib
+
