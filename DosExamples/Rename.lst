@@ -1,0 +1,773 @@
+
+;SAS/C Amiga Compiler (Phase 1)  6.50                Nov  3 1997 10:46:42                                                                            Page 1
+;
+;
+;Line#  Block                                  Source
+;  1          /***********************************************************/
+;  2          /*                                                         */
+;  3          /* Amiga C Encyclopedia (ACE) V3.0      Amiga C Club (ACC) */
+;  4          /* -------------------------------      ------------------ */
+;  5          /*                                                         */
+;  6          /* Book:    ACM System                  Amiga C Club       */
+;  7          /* Chapter: AmigaDOS                    Tulevagen 22       */
+;  8          /* File:    Example3.c                  181 41  LIDINGO    */
+;  9          /* Author:  Anders Bjerin               SWEDEN             */
+; 10          /* Date:    92-05-02                                       */
+; 11          /* Version: 1.10                                           */
+; 12          /*                                                         */
+; 13          /*   Copyright 1992, Anders Bjerin - Amiga C Club (ACC)    */
+; 14          /*                                                         */
+; 15          /* Registered members may use this program freely in their */
+; 16          /*     own commercial/noncommercial programs/articles.     */
+; 17          /*                                                         */
+; 18          /***********************************************************/
+; 19
+; 20          /* This example demonstrates how to rename files and directories. It  */
+; 21          /* will rename the file Example 1 created (called "HighScore.dat") to */
+; 22          /* "Numbers.dat". It will also rename the directory Example 2 created */
+; 23          /* ("MyDirectory") to "NewDirectory".                                 */
+; 24
+; 25
+; 26          /* This file declares the type BOOL: */
+; 27       0  #include <exec/types.h>
+;===> Including file "sc:include/exec/types.h"
+;  1.001   0  #ifndef	EXEC_TYPES_H
+;  1.002   0  #define	EXEC_TYPES_H
+;  1.003      /*
+;  1.004      **	$VER: types.h 40.1 (10.8.93)
+;  1.005      **	Includes Release 40.13
+;  1.006      **
+;  1.007      **	Data typing.  Must be included before any other Amiga include.
+;  1.008      **
+;  1.009      **	(C) Copyright 1985-1993 Commodore-Amiga, Inc.
+;  1.010      **	    All Rights Reserved
+;  1.011      */
+;  1.012
+;  1.013
+;  1.014   0  #define INCLUDE_VERSION	40 /* Version of the include files in use. (Do not
+;  1.015   0  			      use this label for OpenLibrary() calls!) */
+;  1.016
+;  1.017
+;  1.018   0  #define GLOBAL	extern	    /* the declaratory use of an external */
+;  1.019   0  #define IMPORT	extern	    /* reference to an external */
+;  1.020   0  #define STATIC	static	    /* a local static variable */
+;  1.021   0  #define REGISTER register   /* a (hopefully) register variable */
+;  1.022
+
+;SAS/C Amiga Compiler (Phase 1)  6.50                Nov  3 1997 10:46:42                                                                            Page 2
+;
+;
+;Line#  Block                                  Source
+;  1.023
+;  1.024   0  #ifndef VOID
+;  1.025   0  #define VOID		void
+;  1.026   0  #endif
+;  1.027
+;  1.028
+;  1.029        /*  WARNING: APTR was redefined for the V36 Includes!  APTR is a   */
+;  1.030       /*  32-Bit Absolute Memory Pointer.  C pointer math will not	    */
+;  1.031      /*  operate on APTR --	use "ULONG *" instead.			   */
+;  1.032   0  #ifndef APTR_TYPEDEF
+;  1.033   0  #define APTR_TYPEDEF
+;  1.034   0  typedef void	       *APTR;	    /* 32-bit untyped pointer */
+;  1.035   0  #endif
+;  1.036   0  typedef long		LONG;	    /* signed 32-bit quantity */
+;  1.037   0  typedef unsigned long	ULONG;	    /* unsigned 32-bit quantity */
+;  1.038   0  typedef unsigned long	LONGBITS;   /* 32 bits manipulated individually */
+;  1.039   0  typedef short		WORD;	    /* signed 16-bit quantity */
+;  1.040   0  typedef unsigned short	UWORD;	    /* unsigned 16-bit quantity */
+;  1.041   0  typedef unsigned short	WORDBITS;   /* 16 bits manipulated individually */
+;  1.042   0  #if __STDC__
+;  1.043   0  typedef signed char	BYTE;	    /* signed 8-bit quantity */
+;  1.044   0  #else
+;  1.045      typedef char		BYTE;	    /* signed 8-bit quantity */
+;  1.046      #endif
+;  1.047   0  typedef unsigned char	UBYTE;	    /* unsigned 8-bit quantity */
+;  1.048   0  typedef unsigned char	BYTEBITS;   /* 8 bits manipulated individually */
+;  1.049   0  typedef unsigned short	RPTR;	    /* signed relative pointer */
+;  1.050
+;  1.051   0  #ifdef __cplusplus
+;  1.052      typedef char	       *STRPTR;     /* string pointer (NULL terminated) */
+;  1.053      #else
+;  1.054   0  typedef unsigned char  *STRPTR;     /* string pointer (NULL terminated) */
+;  1.055   0  #endif
+;  1.056
+;  1.057
+;  1.058      /* For compatibility only: (don't use in new code) */
+;  1.059   0  typedef short		SHORT;	    /* signed 16-bit quantity (use WORD) */
+;  1.060   0  typedef unsigned short	USHORT;     /* unsigned 16-bit quantity (use UWORD) */
+;  1.061   0  typedef short		COUNT;
+;  1.062   0  typedef unsigned short	UCOUNT;
+;  1.063   0  typedef ULONG		CPTR;
+;  1.064
+;  1.065
+;  1.066      /* Types with specific semantics */
+;  1.067   0  typedef float		FLOAT;
+;  1.068   0  typedef double		DOUBLE;
+;  1.069   0  typedef short		BOOL;
+;  1.070   0  typedef unsigned char	TEXT;
+;  1.071
+;  1.072   0  #ifndef TRUE
+
+;SAS/C Amiga Compiler (Phase 1)  6.50                Nov  3 1997 10:46:42                                                                            Page 3
+;
+;
+;Line#  Block                                  Source
+;  1.073   0  #define TRUE		1
+;  1.074   0  #endif
+;  1.075   0  #ifndef FALSE
+;  1.076   0  #define FALSE		0
+;  1.077   0  #endif
+;  1.078
+;  1.079   0  #include <sys/commnull.h>
+;===> Including file "sc:include/sys/commnull.h"
+;  2.001      /* Copyright (c) 1993 SAS Institute, Inc., Cary, NC USA */
+;  2.002      /* All Rights Reserved */
+;  2.003
+;  2.004      /* This header file contains common preprocessor symbol   */
+;  2.005      /* definitions that were previously duplicated throughout */
+;  2.006      /* the header files. Those definitions were moved here    */
+;  2.007      /* and replaced with a #include of this header file.      */
+;  2.008      /* This was done to purify the header files for GST       */
+;  2.009      /* processing.                                            */
+;  2.010
+;  2.011   0  #ifndef NULL
+;  2.012   0  #define NULL  0L
+;  2.013   0  #endif
+;  1.080
+;  1.081
+;  1.082   0  #define BYTEMASK	0xFF
+;  1.083
+;  1.084
+;  1.085       /* #define LIBRARY_VERSION is now obsolete.  Please use LIBRARY_MINIMUM */
+;  1.086      /* or code the specific minimum library version you require.		*/
+;  1.087   0  #define LIBRARY_MINIMUM	33 /* Lowest version supported by Commodore-Amiga */
+;  1.088
+;  1.089
+;  1.090   0  #endif	/* EXEC_TYPES_H */
+; 28       0  #include <dos/dos.h>
+;===> Including file "sc:include/dos/dos.h"
+;  3.001   0  #ifndef DOS_DOS_H
+;  3.002   0  #define DOS_DOS_H
+;  3.003      /*
+;  3.004      **	$VER: dos.h 36.27 (5.4.92)
+;  3.005      **	Includes Release 40.13
+;  3.006      **
+;  3.007      **	Standard C header for AmigaDOS
+;  3.008      **
+;  3.009      **	(C) Copyright 1985-1993 Commodore-Amiga, Inc.
+;  3.010      **	    All Rights Reserved
+;  3.011      */
+;  3.012
+;  3.013   0  #ifndef EXEC_TYPES_H
+;  3.014      #include "exec/types.h"
+;  3.015      #endif
+;  3.016
+
+;SAS/C Amiga Compiler (Phase 1)  6.50                Nov  3 1997 10:46:42                                                                            Page 4
+;
+;
+;Line#  Block                                  Source
+;  3.017
+;  3.018   0  #define	 DOSNAME  "dos.library"
+;  3.019
+;  3.020      /* Predefined Amiga DOS global constants */
+;  3.021
+;  3.022   0  #define DOSTRUE (-1L)
+;  3.023   0  #define DOSFALSE (0L)
+;  3.024
+;  3.025      /* Mode parameter to Open() */
+;  3.026   0  #define MODE_OLDFILE	     1005   /* Open existing file read/write
+;  3.027   0  				     * positioned at beginning of file. */
+;  3.028   0  #define MODE_NEWFILE	     1006   /* Open freshly created file (delete
+;  3.029   0  				     * old file) read/write, exclusive lock. */
+;  3.030   0  #define MODE_READWRITE	     1004   /* Open old file w/shared lock,
+;  3.031   0  				     * creates file if doesn't exist. */
+;  3.032
+;  3.033      /* Relative position to Seek() */
+;  3.034   0  #define OFFSET_BEGINNING    -1	    /* relative to Begining Of File */
+;  3.035   0  #define OFFSET_CURRENT	     0	    /* relative to Current file position */
+;  3.036   0  #define OFFSET_END	     1	    /* relative to End Of File	  */
+;  3.037
+;  3.038   0  #define OFFSET_BEGINING	    OFFSET_BEGINNING  /* ancient compatibility */
+;  3.039
+;  3.040   0  #define BITSPERBYTE	     8
+;  3.041   0  #define BYTESPERLONG	     4
+;  3.042   0  #define BITSPERLONG	     32
+;  3.043   0  #define MAXINT		     0x7FFFFFFF
+;  3.044   0  #define MININT		     0x80000000
+;  3.045
+;  3.046      /* Passed as type to Lock() */
+;  3.047   0  #define SHARED_LOCK	     -2	    /* File is readable by others */
+;  3.048   0  #define ACCESS_READ	     -2	    /* Synonym */
+;  3.049   0  #define EXCLUSIVE_LOCK	     -1	    /* No other access allowed	  */
+;  3.050   0  #define ACCESS_WRITE	     -1	    /* Synonym */
+;  3.051
+;  3.052   0  struct DateStamp {
+;  3.053   0     LONG	 ds_Days;	      /* Number of days since Jan. 1, 1978 */
+;  3.054   0     LONG	 ds_Minute;	      /* Number of minutes past midnight */
+;  3.055   0     LONG	 ds_Tick;	      /* Number of ticks past minute */
+;  3.056   0  }; /* DateStamp */
+;  3.057
+;  3.058   0  #define TICKS_PER_SECOND      50   /* Number of ticks in one second */
+;  3.059
+;  3.060      /* Returned by Examine() and ExNext(), must be on a 4 byte boundary */
+;  3.061   0  struct FileInfoBlock {
+;  3.062   0     LONG	  fib_DiskKey;
+;  3.063   0     LONG	  fib_DirEntryType;  /* Type of Directory. If < 0, then a plain file.
+;  3.064   0  			      * If > 0 a directory */
+;  3.065   0     char	  fib_FileName[108]; /* Null terminated. Max 30 chars used for now */
+;  3.066   0     LONG	  fib_Protection;    /* bit mask of protection, rwxd are 3-0.	   */
+
+;SAS/C Amiga Compiler (Phase 1)  6.50                Nov  3 1997 10:46:42                                                                            Page 5
+;
+;
+;Line#  Block                                  Source
+;  3.067   0     LONG	  fib_EntryType;
+;  3.068   0     LONG	  fib_Size;	     /* Number of bytes in file */
+;  3.069   0     LONG	  fib_NumBlocks;     /* Number of blocks in file */
+;  3.070   0     struct DateStamp fib_Date;/* Date file last changed */
+;  3.071   0     char	  fib_Comment[80];  /* Null terminated comment associated with file */
+;  3.072
+;  3.073         /* Note: the following fields are not supported by all filesystems.	*/
+;  3.074         /* They should be initialized to 0 sending an ACTION_EXAMINE packet.	*/
+;  3.075         /* When Examine() is called, these are set to 0 for you.		*/
+;  3.076         /* AllocDosObject() also initializes them to 0.			*/
+;  3.077   0     UWORD  fib_OwnerUID;		/* owner's UID */
+;  3.078   0     UWORD  fib_OwnerGID;		/* owner's GID */
+;  3.079
+;  3.080   0     char	  fib_Reserved[32];
+;  3.081   0  }; /* FileInfoBlock */
+;  3.082
+;  3.083      /* FIB stands for FileInfoBlock */
+;  3.084
+;  3.085      /* FIBB are bit definitions, FIBF are field definitions */
+;  3.086      /* Regular RWED bits are 0 == allowed. */
+;  3.087      /* NOTE: GRP and OTR RWED permissions are 0 == not allowed! */
+;  3.088      /* Group and Other permissions are not directly handled by the filesystem */
+;  3.089   0  #define FIBB_OTR_READ	   15	/* Other: file is readable */
+;  3.090   0  #define FIBB_OTR_WRITE	   14	/* Other: file is writable */
+;  3.091   0  #define FIBB_OTR_EXECUTE   13	/* Other: file is executable */
+;  3.092   0  #define FIBB_OTR_DELETE    12	/* Other: prevent file from being deleted */
+;  3.093   0  #define FIBB_GRP_READ	   11	/* Group: file is readable */
+;  3.094   0  #define FIBB_GRP_WRITE	   10	/* Group: file is writable */
+;  3.095   0  #define FIBB_GRP_EXECUTE   9	/* Group: file is executable */
+;  3.096   0  #define FIBB_GRP_DELETE    8	/* Group: prevent file from being deleted */
+;  3.097
+;  3.098   0  #define FIBB_SCRIPT    6	/* program is a script (execute) file */
+;  3.099   0  #define FIBB_PURE      5	/* program is reentrant and rexecutable */
+;  3.100   0  #define FIBB_ARCHIVE   4	/* cleared whenever file is changed */
+;  3.101   0  #define FIBB_READ      3	/* ignored by old filesystem */
+;  3.102   0  #define FIBB_WRITE     2	/* ignored by old filesystem */
+;  3.103   0  #define FIBB_EXECUTE   1	/* ignored by system, used by Shell */
+;  3.104   0  #define FIBB_DELETE    0	/* prevent file from being deleted */
+;  3.105
+;  3.106   0  #define FIBF_OTR_READ	   (1<<FIBB_OTR_READ)
+;  3.107   0  #define FIBF_OTR_WRITE	   (1<<FIBB_OTR_WRITE)
+;  3.108   0  #define FIBF_OTR_EXECUTE   (1<<FIBB_OTR_EXECUTE)
+;  3.109   0  #define FIBF_OTR_DELETE    (1<<FIBB_OTR_DELETE)
+;  3.110   0  #define FIBF_GRP_READ	   (1<<FIBB_GRP_READ)
+;  3.111   0  #define FIBF_GRP_WRITE	   (1<<FIBB_GRP_WRITE)
+;  3.112   0  #define FIBF_GRP_EXECUTE   (1<<FIBB_GRP_EXECUTE)
+;  3.113   0  #define FIBF_GRP_DELETE    (1<<FIBB_GRP_DELETE)
+;  3.114
+;  3.115   0  #define FIBF_SCRIPT    (1<<FIBB_SCRIPT)
+;  3.116   0  #define FIBF_PURE      (1<<FIBB_PURE)
+
+;SAS/C Amiga Compiler (Phase 1)  6.50                Nov  3 1997 10:46:42                                                                            Page 6
+;
+;
+;Line#  Block                                  Source
+;  3.117   0  #define FIBF_ARCHIVE   (1<<FIBB_ARCHIVE)
+;  3.118   0  #define FIBF_READ      (1<<FIBB_READ)
+;  3.119   0  #define FIBF_WRITE     (1<<FIBB_WRITE)
+;  3.120   0  #define FIBF_EXECUTE   (1<<FIBB_EXECUTE)
+;  3.121   0  #define FIBF_DELETE    (1<<FIBB_DELETE)
+;  3.122
+;  3.123      /* Standard maximum length for an error string from fault.  However, most */
+;  3.124      /* error strings should be kept under 60 characters if possible.  Don't   */
+;  3.125      /* forget space for the header you pass in. */
+;  3.126   0  #define FAULT_MAX	82
+;  3.127
+;  3.128      /* All BCPL data must be long word aligned.  BCPL pointers are the long word
+;  3.129       *  address (i.e byte address divided by 4 (>>2)) */
+;  3.130   0  typedef long  BPTR;		    /* Long word pointer */
+;  3.131   0  typedef long  BSTR;		    /* Long word pointer to BCPL string	 */
+;  3.132
+;  3.133      /* Convert BPTR to typical C pointer */
+;  3.134   0  #ifdef OBSOLETE_LIBRARIES_DOS_H
+;  3.135      #define BADDR( bptr )	(((ULONG)bptr) << 2)
+;  3.136      #else
+;  3.137      /* This one has no problems with CASTing */
+;  3.138   0  #define BADDR(x)	((APTR)((ULONG)(x) << 2))
+;  3.139   0  #endif
+;  3.140      /* Convert address into a BPTR */
+;  3.141   0  #define MKBADDR(x)	(((LONG)(x)) >> 2)
+;  3.142
+;  3.143      /* BCPL strings have a length in the first byte and then the characters.
+;  3.144       * For example:	 s[0]=3 s[1]=S s[2]=Y s[3]=S				 */
+;  3.145
+;  3.146      /* returned by Info(), must be on a 4 byte boundary */
+;  3.147   0  struct InfoData {
+;  3.148   0     LONG	  id_NumSoftErrors;	/* number of soft errors on disk */
+;  3.149   0     LONG	  id_UnitNumber;	/* Which unit disk is (was) mounted on */
+;  3.150   0     LONG	  id_DiskState;		/* See defines below */
+;  3.151   0     LONG	  id_NumBlocks;		/* Number of blocks on disk */
+;  3.152   0     LONG	  id_NumBlocksUsed;	/* Number of block in use */
+;  3.153   0     LONG	  id_BytesPerBlock;
+;  3.154   0     LONG	  id_DiskType;		/* Disk Type code */
+;  3.155   0     BPTR	  id_VolumeNode;	/* BCPL pointer to volume node */
+;  3.156   0     LONG	  id_InUse;		/* Flag, zero if not in use */
+;  3.157   0  }; /* InfoData */
+;  3.158
+;  3.159      /* ID stands for InfoData */
+;  3.160      	/* Disk states */
+;  3.161   0  #define ID_WRITE_PROTECTED 80	 /* Disk is write protected */
+;  3.162   0  #define ID_VALIDATING	   81	 /* Disk is currently being validated */
+;  3.163   0  #define ID_VALIDATED	   82	 /* Disk is consistent and writeable */
+;  3.164
+;  3.165      	/* Disk types */
+;  3.166      /* ID_INTER_* use international case comparison routines for hashing */
+
+;SAS/C Amiga Compiler (Phase 1)  6.50                Nov  3 1997 10:46:42                                                                            Page 7
+;
+;
+;Line#  Block                                  Source
+;  3.167      /* Any other new filesystems should also, if possible. */
+;  3.168   0  #define ID_NO_DISK_PRESENT	(-1)
+;  3.169   0  #define ID_UNREADABLE_DISK	(0x42414400L)	/* 'BAD\0' */
+;  3.170   0  #define ID_DOS_DISK		(0x444F5300L)	/* 'DOS\0' */
+;  3.171   0  #define ID_FFS_DISK		(0x444F5301L)	/* 'DOS\1' */
+;  3.172   0  #define ID_INTER_DOS_DISK	(0x444F5302L)	/* 'DOS\2' */
+;  3.173   0  #define ID_INTER_FFS_DISK	(0x444F5303L)	/* 'DOS\3' */
+;  3.174   0  #define ID_FASTDIR_DOS_DISK	(0x444F5304L)	/* 'DOS\4' */
+;  3.175   0  #define ID_FASTDIR_FFS_DISK	(0x444F5305L)	/* 'DOS\5' */
+;  3.176   0  #define ID_NOT_REALLY_DOS	(0x4E444F53L)	/* 'NDOS'  */
+;  3.177   0  #define ID_KICKSTART_DISK	(0x4B49434BL)	/* 'KICK'  */
+;  3.178   0  #define ID_MSDOS_DISK		(0x4d534400L)	/* 'MSD\0' */
+;  3.179
+;  3.180      /* Errors from IoErr(), etc. */
+;  3.181   0  #define ERROR_NO_FREE_STORE		  103
+;  3.182   0  #define ERROR_TASK_TABLE_FULL		  105
+;  3.183   0  #define ERROR_BAD_TEMPLATE		  114
+;  3.184   0  #define ERROR_BAD_NUMBER		  115
+;  3.185   0  #define ERROR_REQUIRED_ARG_MISSING	  116
+;  3.186   0  #define ERROR_KEY_NEEDS_ARG		  117
+;  3.187   0  #define ERROR_TOO_MANY_ARGS		  118
+;  3.188   0  #define ERROR_UNMATCHED_QUOTES		  119
+;  3.189   0  #define ERROR_LINE_TOO_LONG		  120
+;  3.190   0  #define ERROR_FILE_NOT_OBJECT		  121
+;  3.191   0  #define ERROR_INVALID_RESIDENT_LIBRARY	  122
+;  3.192   0  #define ERROR_NO_DEFAULT_DIR		  201
+;  3.193   0  #define ERROR_OBJECT_IN_USE		  202
+;  3.194   0  #define ERROR_OBJECT_EXISTS		  203
+;  3.195   0  #define ERROR_DIR_NOT_FOUND		  204
+;  3.196   0  #define ERROR_OBJECT_NOT_FOUND		  205
+;  3.197   0  #define ERROR_BAD_STREAM_NAME		  206
+;  3.198   0  #define ERROR_OBJECT_TOO_LARGE		  207
+;  3.199   0  #define ERROR_ACTION_NOT_KNOWN		  209
+;  3.200   0  #define ERROR_INVALID_COMPONENT_NAME	  210
+;  3.201   0  #define ERROR_INVALID_LOCK		  211
+;  3.202   0  #define ERROR_OBJECT_WRONG_TYPE		  212
+;  3.203   0  #define ERROR_DISK_NOT_VALIDATED	  213
+;  3.204   0  #define ERROR_DISK_WRITE_PROTECTED	  214
+;  3.205   0  #define ERROR_RENAME_ACROSS_DEVICES	  215
+;  3.206   0  #define ERROR_DIRECTORY_NOT_EMPTY	  216
+;  3.207   0  #define ERROR_TOO_MANY_LEVELS		  217
+;  3.208   0  #define ERROR_DEVICE_NOT_MOUNTED	  218
+;  3.209   0  #define ERROR_SEEK_ERROR		  219
+;  3.210   0  #define ERROR_COMMENT_TOO_BIG		  220
+;  3.211   0  #define ERROR_DISK_FULL			  221
+;  3.212   0  #define ERROR_DELETE_PROTECTED		  222
+;  3.213   0  #define ERROR_WRITE_PROTECTED		  223
+;  3.214   0  #define ERROR_READ_PROTECTED		  224
+;  3.215   0  #define ERROR_NOT_A_DOS_DISK		  225
+;  3.216   0  #define ERROR_NO_DISK			  226
+
+;SAS/C Amiga Compiler (Phase 1)  6.50                Nov  3 1997 10:46:42                                                                            Page 8
+;
+;
+;Line#  Block                                  Source
+;  3.217   0  #define ERROR_NO_MORE_ENTRIES		  232
+;  3.218      /* added for 1.4 */
+;  3.219   0  #define ERROR_IS_SOFT_LINK		  233
+;  3.220   0  #define ERROR_OBJECT_LINKED		  234
+;  3.221   0  #define ERROR_BAD_HUNK			  235
+;  3.222   0  #define ERROR_NOT_IMPLEMENTED		  236
+;  3.223   0  #define ERROR_RECORD_NOT_LOCKED		  240
+;  3.224   0  #define ERROR_LOCK_COLLISION		  241
+;  3.225   0  #define ERROR_LOCK_TIMEOUT		  242
+;  3.226   0  #define ERROR_UNLOCK_ERROR		  243
+;  3.227
+;  3.228      /* error codes 303-305 are defined in dosasl.h */
+;  3.229
+;  3.230      /* These are the return codes used by convention by AmigaDOS commands */
+;  3.231      /* See FAILAT and IF for relvance to EXECUTE files		      */
+;  3.232   0  #define RETURN_OK			    0  /* No problems, success */
+;  3.233   0  #define RETURN_WARN			    5  /* A warning only */
+;  3.234   0  #define RETURN_ERROR			   10  /* Something wrong */
+;  3.235   0  #define RETURN_FAIL			   20  /* Complete or severe failure*/
+;  3.236
+;  3.237      /* Bit numbers that signal you that a user has issued a break */
+;  3.238   0  #define SIGBREAKB_CTRL_C   12
+;  3.239   0  #define SIGBREAKB_CTRL_D   13
+;  3.240   0  #define SIGBREAKB_CTRL_E   14
+;  3.241   0  #define SIGBREAKB_CTRL_F   15
+;  3.242
+;  3.243      /* Bit fields that signal you that a user has issued a break */
+;  3.244      /* for example:	 if (SetSignal(0,0) & SIGBREAKF_CTRL_C) cleanup_and_exit(); */
+;  3.245   0  #define SIGBREAKF_CTRL_C   (1<<SIGBREAKB_CTRL_C)
+;  3.246   0  #define SIGBREAKF_CTRL_D   (1<<SIGBREAKB_CTRL_D)
+;  3.247   0  #define SIGBREAKF_CTRL_E   (1<<SIGBREAKB_CTRL_E)
+;  3.248   0  #define SIGBREAKF_CTRL_F   ((long)1<<SIGBREAKB_CTRL_F)
+;  3.249
+;  3.250      /* Values returned by SameLock() */
+;  3.251   0  #define LOCK_DIFFERENT		-1
+;  3.252   0  #define LOCK_SAME		0
+;  3.253   0  #define LOCK_SAME_VOLUME	1	/* locks are on same volume */
+;  3.254   0  #define LOCK_SAME_HANDLER	LOCK_SAME_VOLUME
+;  3.255      /* LOCK_SAME_HANDLER was a misleading name, def kept for src compatibility */
+;  3.256
+;  3.257      /* types for ChangeMode() */
+;  3.258   0  #define CHANGE_LOCK	0
+;  3.259   0  #define CHANGE_FH	1
+;  3.260
+;  3.261      /* Values for MakeLink() */
+;  3.262   0  #define LINK_HARD	0
+;  3.263   0  #define LINK_SOFT	1	/* softlinks are not fully supported yet */
+;  3.264
+;  3.265      /* values returned by ReadItem */
+;  3.266   0  #define	ITEM_EQUAL	-2		/* "=" Symbol */
+
+;SAS/C Amiga Compiler (Phase 1)  6.50                Nov  3 1997 10:46:42                                                                            Page 9
+;
+;
+;Line#  Block                                  Source
+;  3.267   0  #define ITEM_ERROR	-1		/* error */
+;  3.268   0  #define ITEM_NOTHING	0		/* *N, ;, endstreamch */
+;  3.269   0  #define ITEM_UNQUOTED	1		/* unquoted item */
+;  3.270   0  #define ITEM_QUOTED	2		/* quoted item */
+;  3.271
+;  3.272      /* types for AllocDosObject/FreeDosObject */
+;  3.273   0  #define DOS_FILEHANDLE		0	/* few people should use this */
+;  3.274   0  #define DOS_EXALLCONTROL	1	/* Must be used to allocate this! */
+;  3.275   0  #define	DOS_FIB			2	/* useful */
+;  3.276   0  #define DOS_STDPKT		3	/* for doing packet-level I/O */
+;  3.277   0  #define DOS_CLI			4	/* for shell-writers, etc */
+;  3.278   0  #define DOS_RDARGS		5	/* for ReadArgs if you pass it in */
+;  3.279
+;  3.280   0  #endif	/* DOS_DOS_H */
+;  3.281
+; 29       0  #include <stdio.h>
+;===> Including file "sc:include/stdio.h"
+;  4.001      /* Copyright (c) 1992-1993 SAS Institute, Inc., Cary, NC USA */
+;  4.002      /* All Rights Reserved */
+;  4.003
+;  4.004
+;  4.005   0  #ifndef _STDIO_H
+;  4.006   0  #define _STDIO_H 1
+;  4.007
+;  4.008   0  #ifndef _COMMSIZE_H
+;  4.009   0  #include <sys/commsize.h>
+;===> Including file "sc:include/sys/commsize.h"
+;  5.001      /* Copyright (c) 1993 SAS Institute, Inc., Cary, NC USA */
+;  5.002      /* All Rights Reserved */
+;  5.003
+;  5.004      /* This header file contains common preprocessor symbol   */
+;  5.005      /* definitions that were previously duplicated throughout */
+;  5.006      /* the header files. Those definitions were moved here    */
+;  5.007      /* and replaced with a #include of this header file.      */
+;  5.008      /* This was done to purify the header files for GST       */
+;  5.009      /* processing.                                            */
+;  5.010
+;  5.011   0  #ifndef _SIZE_T
+;  5.012   0  #define _SIZE_T 1
+;  5.013   0  typedef unsigned int size_t;
+;  5.014   0  #endif
+;  4.010   0  #endif
+;  4.011
+;  4.012   0  #ifndef _COMMLIST_H
+;  4.013   0  #include <sys/commlist.h>
+;===> Including file "sc:include/sys/commlist.h"
+;  6.001      /* Copyright (c) 1993 SAS Institute, Inc., Cary, NC USA */
+;  6.002      /* All Rights Reserved */
+;  6.003
+;  6.004      /* This header file contains common preprocessor symbol   */
+
+;SAS/C Amiga Compiler (Phase 1)  6.50                Nov  3 1997 10:46:42                                                                            Page 10
+;
+;
+;Line#  Block                                  Source
+;  6.005      /* definitions that were previously duplicated throughout */
+;  6.006      /* the header files. Those definitions were moved here    */
+;  6.007      /* and replaced with a #include of this header file.      */
+;  6.008      /* This was done to purify the header files for GST       */
+;  6.009      /* processing.                                            */
+;  6.010
+;  6.011   0  #ifndef _VA_LIST
+;  6.012   0  #define _VA_LIST 1
+;  6.013   0  typedef char *va_list;
+;  6.014   0  #endif
+;  4.014   0  #endif
+;  4.015
+;  4.016   0  typedef unsigned long fpos_t;
+;  4.017
+;  4.018   0  #ifndef _COMMNULL_H
+;  4.019   0  #include <sys/commnull.h>
+;  4.020   0  #endif
+;  4.021
+;  4.022      /**
+;  4.023      *
+;  4.024      * Definitions associated with __iobuf._flag
+;  4.025      *
+;  4.026      **/
+;  4.027
+;  4.028   0  #define _IOFBF   0		/* fully buffered (for setvbuf) */
+;  4.029   0  #define _IOREAD  1		/* read flag */
+;  4.030   0  #define _IOWRT   2		/* write flag */
+;  4.031   0  #define _IONBF   4		/* non-buffered flag */
+;  4.032   0  #define _IOMYBUF 8		/* private buffer flag */
+;  4.033   0  #define _IOEOF   16		/* end-of-file flag */
+;  4.034   0  #define _IOERR   32		/* error flag */
+;  4.035   0  #define _IOLBF   64		/* line-buffered flag */
+;  4.036   0  #define _IORW    128		/* read-write (update) flag */
+;  4.037   0  #define _IOUNGET 0x1000         /* unget was used since last seek */
+;  4.038   0  #define _IORKEY  0x2000         /* raw console I/O flag */
+;  4.039   0  #define _IOAPP   0x4000		/* append flag */
+;  4.040   0  #define _IOXLAT  0x8000		/* translation flag */
+;  4.041
+;  4.042   0  #define BUFSIZ 512		/* standard buffer size */
+;  4.043   0  #define EOF (-1)		/* end-of-file code */
+;  4.044   0  #define FOPEN_MAX 20            /* maximum number of open files */
+;  4.045   0  #define FILENAME_MAX  64        /* maximum filename length */
+;  4.046   0  #define L_tmpnam 64             /* maximum tmpnam filename length */
+;  4.047
+;  4.048   0  #define SEEK_SET 0              /* Seek from beginning of file */
+;  4.049   0  #define SEEK_CUR 1              /* Seek from current file position */
+;  4.050   0  #define SEEK_END 2              /* Seek from end of file */
+;  4.051
+;  4.052   0  #define TMP_MAX 999             /* Guaranteed unique temp names */
+;  4.053
+
+;SAS/C Amiga Compiler (Phase 1)  6.50                Nov  3 1997 10:46:42                                                                            Page 11
+;
+;
+;Line#  Block                                  Source
+;  4.054   0  struct __iobuf {
+;  4.055   0      struct __iobuf *_next;
+;  4.056   0      unsigned char *_ptr;	/* current buffer pointer */
+;  4.057   0      int _rcnt;		        /* current byte count for reading */
+;  4.058   0      int _wcnt;		        /* current byte count for writing */
+;  4.059   0      unsigned char *_base;	/* base address of I/O buffer */
+;  4.060   0      int _size;			/* size of buffer */
+;  4.061   0      int _flag;	        	/* control flags */
+;  4.062   0      int _file;		        /* file descriptor */
+;  4.063   0      unsigned char _cbuff;	/* single char buffer */
+;  4.064   0  };
+;  4.065
+;  4.066   0  typedef struct __iobuf FILE;
+;  4.067
+;  4.068   0  extern struct __iobuf __iob[];
+;  4.069
+;  4.070   0  #define stdin (&__iob[0])	/* standard input file pointer */
+;  4.071   0  #define stdout (&__iob[1])	/* standard output file pointer */
+;  4.072   0  #define stderr (&__iob[2])	/* standard error file pointer */
+;  4.073
+;  4.074
+;  4.075      /***
+;  4.076      *
+;  4.077      *     Prototypes for ANSI standard functions.
+;  4.078      *
+;  4.079      ***/
+;  4.080
+;  4.081
+;  4.082   0  extern int remove(const char *);
+;  4.083   0  extern int rename(const char *, const char *);
+;  4.084   0  extern FILE *tmpfile(void);
+;  4.085   0  extern char *tmpnam(char *s);
+;  4.086
+;  4.087   0  extern int fclose(FILE *);
+;  4.088   0  extern int fflush(FILE *);
+;  4.089   0  extern FILE *fopen(const char *, const char *);
+;  4.090   0  extern FILE *freopen(const char *, const char *, FILE *);
+;  4.091   0  extern void setbuf(FILE *, char *);
+;  4.092   0  extern int setvbuf(FILE *, char *, int, size_t);
+;  4.093
+;  4.094   0  extern int fprintf(FILE *, const char *, ...);
+;  4.095   0  extern int fscanf(FILE *, const char *, ...);
+;  4.096   0  extern int printf(const char *, ...);
+;  4.097   0  extern int __builtin_printf(const char *, ...);
+;  4.098   0  extern int scanf(const char *, ...);
+;  4.099   0  extern int sprintf(char *, const char *, ...);
+;  4.100   0  extern int sscanf(const char *, const char *, ...);
+;  4.101   0  extern int vfprintf(FILE *, const char *, va_list);
+;  4.102   0  extern int vprintf(const char *, va_list);
+;  4.103   0  extern int vsprintf(char *, const char *, va_list);
+
+;SAS/C Amiga Compiler (Phase 1)  6.50                Nov  3 1997 10:46:42                                                                            Page 12
+;
+;
+;Line#  Block                                  Source
+;  4.104
+;  4.105   0  extern int fgetc(FILE *);
+;  4.106   0  extern char *fgets(char *, int, FILE *);
+;  4.107   0  extern int fputc(int, FILE *);
+;  4.108   0  extern int fputs(const char *, FILE *);
+;  4.109   0  extern int getc(FILE *);
+;  4.117   0              fgetc(p))
+;  4.118   0  extern int getchar(void);
+;  4.119   0  #define getchar() getc(stdin)
+;  4.120   0  extern char *gets(char *);
+;  4.121   0  extern int putc(int, FILE *);
+;  4.122
+;  4.123   0  #ifdef _USE_DIRTY_PUTC
+;  4.124      /* this putc macro evaluates the charater expression multiple time */
+;  4.125      /* which is a violation of the ANSI standard. */
+;  4.137                   fputc(c,p))
+;  4.138      #endif
+;  4.139
+;  4.140
+;  4.141   0  extern int putchar(int);
+;  4.142   0  #define putchar(c) putc(c,stdout)
+;  4.143   0  extern int puts(const char *);
+;  4.144   0  extern int ungetc(int, FILE *);
+;  4.145
+;  4.146   0  extern size_t fread(void *, size_t, size_t, FILE *);
+;  4.147   0  extern size_t fwrite(const void *, size_t, size_t, FILE *);
+;  4.148   0  extern int fgetpos(FILE *, fpos_t *);
+;  4.149   0  extern int fseek(FILE *, long int, int);
+;  4.150   0  extern int fsetpos(FILE *, const fpos_t *);
+;  4.151   0  extern long int ftell(FILE *);
+;  4.152   0  extern void rewind(FILE *);
+;  4.153   0  #define rewind(p) fseek(p, 0L, 0)
+;  4.154
+;  4.155   0  extern void clearerr(FILE *);
+;  4.156   0  #define clearerr(p) ((p)->_flag &= ~(_IOERR | _IOEOF))
+;  4.157   0  extern int feof(FILE *);
+;  4.158   0  #define feof(p) (((p)->_flag & _IOEOF) != 0)
+;  4.159   0  extern int ferror(FILE *);
+;  4.160   0  #define ferror(p) (((p)->_flag & _IOERR) != 0)
+;  4.161   0  extern void perror(const char *);
+;  4.162
+;  4.163   0  #define printf __builtin_printf
+;  4.164
+;  4.165   0  #ifndef _STRICT_ANSI
+;  4.166
+;  4.167      /* defines for mode of access() */
+;  4.168   0  #define R_OK 4
+;  4.169   0  #define W_OK 2
+;  4.170   0  #define X_OK 1
+;  4.171   0  #define F_OK 0
+
+;SAS/C Amiga Compiler (Phase 1)  6.50                Nov  3 1997 10:46:42                                                                            Page 13
+;
+;
+;Line#  Block                                  Source
+;  4.172
+;  4.173      /***
+;  4.174      *
+;  4.175      *     Prototypes for Non-ANSI functions.
+;  4.176      *
+;  4.177      ***/
+;  4.178
+;  4.179   0  extern int __io2errno(int);
+;  4.180   0  extern int fcloseall(void);
+;  4.181   0  extern FILE *fdopen(int, const char *);
+;  4.182   0  extern int fhopen(long, int);
+;  4.183   0  extern int fgetchar(void);
+;  4.184   0  extern int fileno(FILE *);
+;  4.185   0  extern int flushall(void);
+;  4.186   0  extern void fmode(FILE *, int);
+;  4.187   0  extern int _writes(const char *, ...);
+;  4.188   0  extern int _tinyprintf(char *, ...);
+;  4.189   0  extern int fputchar(int);
+;  4.190   0  extern void setnbf(FILE *);
+;  4.191   0  extern int __fillbuff(FILE *);
+;  4.192   0  extern int __flushbuff(int, FILE *);
+;  4.193   0  extern int __access(const char *, int);
+;  4.194   0  extern int access(const char *, int);
+;  4.195   0  extern int chdir(const char *);
+;  4.196   0  extern int chmod(const char *, int);
+;  4.197   0  extern char *getcwd(char *, int);
+;  4.198   0  extern int unlink(const char *);
+;  4.199   0  extern int poserr(const char *);
+;  4.200
+;  4.201   0  #define  clrerr  clearerr
+;  4.202   0  #define  access  __access
+;  4.203   0  #define  _filbf  __fillbuff
+;  4.204   0  #define  fileno(p) ((p)->_file)
+;  4.205   0  #define  _flsbf  __flushbuff
+;  4.206
+;  4.207
+;  4.208      /***
+;  4.209      *
+;  4.210      *     The following routines allow for raw console I/O.
+;  4.211      *
+;  4.212      ***/
+;  4.213
+;  4.214   0  int rawcon(int);
+;  4.215   0  int getch(void);
+;  4.216
+;  4.217   0  #endif /* _STRICT_ANSI */
+;  4.218
+;  4.219   0  extern unsigned long __fmask;
+;  4.220   0  extern int __fmode;
+;  4.221
+
+;SAS/C Amiga Compiler (Phase 1)  6.50                Nov  3 1997 10:46:42                                                                            Page 14
+;
+;
+;Line#  Block                                  Source
+;  4.222   0  #endif
+; 30
+; 31       0  void main();
+; 32       0  void Rename(argv[],argc);
+;                             ^
+;===> AmiX:SX/Developer/SASC/Rename.c 32 Error 185: comma expected
+;===> AmiX:SX/Developer/SASC/Rename.c 32 Error 65: invalid function definition
+;
+; 33       0  void main()
+; 34       0  {
+; 35       1    BOOL ok;
+; 36
+; 37            /* Rename the file: */
+; 38       1    ok = Rename( "RAM:testdoor", "RAM:RenamedTestdoor" );
+;                          ^
+;===> AmiX:SX/Developer/SASC/Rename.c 38 Error 100: no prototype declared for function "Rename"
+;
+; 39
+; 40            /* Check if the file was successfully renamed: */
+; 41       1    if( !ok )
+; 42       1      printf( "The file could not be renamed!\n" );
+; 43
+; 44       1  }
+; 45
+6.50 (Cross Reference)        Nov  3 1997 10:46:44                         Page 1
+
+
+      SYMBOL        ATTRIBUTES AND CROSS REFERENCE
+
+
+__builtin_printf near __stdargs function returning int
+                 AmiX:SX/Developer/SASC/Rename.c: 42
+
+argc             char
+                 AmiX:SX/Developer/SASC/Rename.c: 32
+
+argv             char
+                 AmiX:SX/Developer/SASC/Rename.c: 32
+
+BOOL             short
+                 AmiX:SX/Developer/SASC/Rename.c: 35
+
+main             near __stdargs function returning void
+                 AmiX:SX/Developer/SASC/Rename.c: 31, 215
+
+ok               "BOOL"
+                 AmiX:SX/Developer/SASC/Rename.c: 35, 38, 41
+
+printf           #define symbol
+                 AmiX:SX/Developer/SASC/Rename.c: 42
+
+Rename           near __stdargs function returning int
+                 AmiX:SX/Developer/SASC/Rename.c: 32, 38

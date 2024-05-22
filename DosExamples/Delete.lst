@@ -1,0 +1,197 @@
+
+;SAS/C Amiga Compiler (Phase 1)  6.50                Nov  3 1997 10:41:02                                                                            Page 1
+;
+;
+;Line#  Block                                  Source
+;  1          /***********************************************************/
+;  2          /*                                                         */
+;  3          /* Amiga C Encyclopedia (ACE) V3.0      Amiga C Club (ACC) */
+;  4          /* -------------------------------      ------------------ */
+;  5          /*                                                         */
+;  6          /* Book:    ACM System                  Amiga C Club       */
+;  7          /* Chapter: AmigaDOS                    Tulevagen 22       */
+;  8          /* File:    Example4.c                  181 41  LIDINGO    */
+;  9          /* Author:  Anders Bjerin               SWEDEN             */
+; 10          /* Date:    92-05-02                                       */
+; 11          /* Version: 1.10                                           */
+; 12          /*                                                         */
+; 13          /*   Copyright 1992, Anders Bjerin - Amiga C Club (ACC)    */
+; 14          /*                                                         */
+; 15          /* Registered members may use this program freely in their */
+; 16          /*     own commercial/noncommercial programs/articles.     */
+; 17          /*                                                         */
+; 18          /***********************************************************/
+; 19
+; 20          /* This example demonstrates how to delete files and directories. It */
+; 21          /* will delete the file Example 1 and directory Example 2 created.   */
+; 22          /* (The file and directory are supposed to have been renamed by      */
+; 23          /* Example 3.)                                                       */
+; 24
+; 25
+; 26          /* This file declares the type BOOL: */
+; 27       0  #include <exec/types.h>
+;===> Including file "sc:include/exec/types.h"
+;  1.001   0  #ifndef	EXEC_TYPES_H
+;  1.002   0  #define	EXEC_TYPES_H
+;  1.003      /*
+;  1.004      **	$VER: types.h 40.1 (10.8.93)
+;  1.005      **	Includes Release 40.13
+;  1.006      **
+;  1.007      **	Data typing.  Must be included before any other Amiga include.
+;  1.008      **
+;  1.009      **	(C) Copyright 1985-1993 Commodore-Amiga, Inc.
+;  1.010      **	    All Rights Reserved
+;  1.011      */
+;  1.012
+;  1.013
+;  1.014   0  #define INCLUDE_VERSION	40 /* Version of the include files in use. (Do not
+;  1.015   0  			      use this label for OpenLibrary() calls!) */
+;  1.016
+;  1.017
+;  1.018   0  #define GLOBAL	extern	    /* the declaratory use of an external */
+;  1.019   0  #define IMPORT	extern	    /* reference to an external */
+;  1.020   0  #define STATIC	static	    /* a local static variable */
+;  1.021   0  #define REGISTER register   /* a (hopefully) register variable */
+;  1.022
+
+;SAS/C Amiga Compiler (Phase 1)  6.50                Nov  3 1997 10:41:02                                                                            Page 2
+;
+;
+;Line#  Block                                  Source
+;  1.023
+;  1.024   0  #ifndef VOID
+;  1.025   0  #define VOID		void
+;  1.026   0  #endif
+;  1.027
+;  1.028
+;  1.029        /*  WARNING: APTR was redefined for the V36 Includes!  APTR is a   */
+;  1.030       /*  32-Bit Absolute Memory Pointer.  C pointer math will not	    */
+;  1.031      /*  operate on APTR --	use "ULONG *" instead.			   */
+;  1.032   0  #ifndef APTR_TYPEDEF
+;  1.033   0  #define APTR_TYPEDEF
+;  1.034   0  typedef void	       *APTR;	    /* 32-bit untyped pointer */
+;  1.035   0  #endif
+;  1.036   0  typedef long		LONG;	    /* signed 32-bit quantity */
+;  1.037   0  typedef unsigned long	ULONG;	    /* unsigned 32-bit quantity */
+;  1.038   0  typedef unsigned long	LONGBITS;   /* 32 bits manipulated individually */
+;  1.039   0  typedef short		WORD;	    /* signed 16-bit quantity */
+;  1.040   0  typedef unsigned short	UWORD;	    /* unsigned 16-bit quantity */
+;  1.041   0  typedef unsigned short	WORDBITS;   /* 16 bits manipulated individually */
+;  1.042   0  #if __STDC__
+;  1.043   0  typedef signed char	BYTE;	    /* signed 8-bit quantity */
+;  1.044   0  #else
+;  1.045      typedef char		BYTE;	    /* signed 8-bit quantity */
+;  1.046      #endif
+;  1.047   0  typedef unsigned char	UBYTE;	    /* unsigned 8-bit quantity */
+;  1.048   0  typedef unsigned char	BYTEBITS;   /* 8 bits manipulated individually */
+;  1.049   0  typedef unsigned short	RPTR;	    /* signed relative pointer */
+;  1.050
+;  1.051   0  #ifdef __cplusplus
+;  1.052      typedef char	       *STRPTR;     /* string pointer (NULL terminated) */
+;  1.053      #else
+;  1.054   0  typedef unsigned char  *STRPTR;     /* string pointer (NULL terminated) */
+;  1.055   0  #endif
+;  1.056
+;  1.057
+;  1.058      /* For compatibility only: (don't use in new code) */
+;  1.059   0  typedef short		SHORT;	    /* signed 16-bit quantity (use WORD) */
+;  1.060   0  typedef unsigned short	USHORT;     /* unsigned 16-bit quantity (use UWORD) */
+;  1.061   0  typedef short		COUNT;
+;  1.062   0  typedef unsigned short	UCOUNT;
+;  1.063   0  typedef ULONG		CPTR;
+;  1.064
+;  1.065
+;  1.066      /* Types with specific semantics */
+;  1.067   0  typedef float		FLOAT;
+;  1.068   0  typedef double		DOUBLE;
+;  1.069   0  typedef short		BOOL;
+;  1.070   0  typedef unsigned char	TEXT;
+;  1.071
+;  1.072   0  #ifndef TRUE
+
+;SAS/C Amiga Compiler (Phase 1)  6.50                Nov  3 1997 10:41:02                                                                            Page 3
+;
+;
+;Line#  Block                                  Source
+;  1.073   0  #define TRUE		1
+;  1.074   0  #endif
+;  1.075   0  #ifndef FALSE
+;  1.076   0  #define FALSE		0
+;  1.077   0  #endif
+;  1.078
+;  1.079   0  #include <sys/commnull.h>
+;===> Including file "sc:include/sys/commnull.h"
+;  2.001      /* Copyright (c) 1993 SAS Institute, Inc., Cary, NC USA */
+;  2.002      /* All Rights Reserved */
+;  2.003
+;  2.004      /* This header file contains common preprocessor symbol   */
+;  2.005      /* definitions that were previously duplicated throughout */
+;  2.006      /* the header files. Those definitions were moved here    */
+;  2.007      /* and replaced with a #include of this header file.      */
+;  2.008      /* This was done to purify the header files for GST       */
+;  2.009      /* processing.                                            */
+;  2.010
+;  2.011   0  #ifndef NULL
+;  2.012   0  #define NULL  0L
+;  2.013   0  #endif
+;  1.080
+;  1.081
+;  1.082   0  #define BYTEMASK	0xFF
+;  1.083
+;  1.084
+;  1.085       /* #define LIBRARY_VERSION is now obsolete.  Please use LIBRARY_MINIMUM */
+;  1.086      /* or code the specific minimum library version you require.		*/
+;  1.087   0  #define LIBRARY_MINIMUM	33 /* Lowest version supported by Commodore-Amiga */
+;  1.088
+;  1.089
+;  1.090   0  #endif	/* EXEC_TYPES_H */
+; 28
+; 29
+; 30       0  void main();
+; 31       0  void main()
+; 32       0  {
+; 33       1    BOOL ok;
+; 34
+; 35            /* Delete the file: */
+; 36       1    ok = DeleteFile("ram:testdoor");
+;                              ^
+;===> AmiX:SX/Developer/SASC/Delete.c 36 Error 100: no prototype declared for function "DeleteFile"
+;
+; 37
+; 38            /* Check if the file was successfully deleted: */
+; 39       1    if( !ok )
+; 40       1      printf( "The file could not be deleted!\n" );
+;                       ^
+;===> AmiX:SX/Developer/SASC/Delete.c 40 Error 100: no prototype declared for function "printf"
+
+;SAS/C Amiga Compiler (Phase 1)  6.50                Nov  3 1997 10:41:02                                                                            Page 4
+;
+;
+;Line#  Block                                  Source
+;
+; 41
+; 42       1    else
+; 43       1    printf(" The File was successfully deleted ! \n\r");
+; 44       1  }
+; 45
+; 46
+6.50 (Cross Reference)        Nov  3 1997 10:41:03                         Page 1
+
+
+      SYMBOL        ATTRIBUTES AND CROSS REFERENCE
+
+
+BOOL             short
+                 AmiX:SX/Developer/SASC/Delete.c: 33
+
+DeleteFile       near __stdargs function returning int
+                 AmiX:SX/Developer/SASC/Delete.c: 36
+
+main             near __stdargs function returning void
+                 AmiX:SX/Developer/SASC/Delete.c: 30, 0
+
+ok               "BOOL"
+                 AmiX:SX/Developer/SASC/Delete.c: 33, 36, 39
+
+printf           near __stdargs function returning int
+                 AmiX:SX/Developer/SASC/Delete.c: 40, 43
